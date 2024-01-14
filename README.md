@@ -8,12 +8,12 @@ Written and (c) 2024 by Harald Roelle
 Provided under the terms of the GPL 3.0 license.
 
 Contains a bunch of code/architecture taken from:
-modbus2mqtt - Modbus master with MQTT publishing
-  Written and (C) 2015 by Oliver Wagner <owagner@tellerulam.com>
-  Provided under the terms of the MIT license.
-spicierModbus2mqtt - Modbus master with MQTT publishing
-  Written and (C) 2018 by Max Brueggemann <mail@maxbrueggemann.de>
-  Provided under the terms of the MIT license.
+- modbus2mqtt - Modbus master with MQTT publishing
+  - Written and (C) 2015 by Oliver Wagner <owagner@tellerulam.com>
+  - Provided under the terms of the MIT license.
+- spicierModbus2mqtt - Modbus master with MQTT publishing
+  - Written and (C) 2018 by Max Brueggemann <mail@maxbrueggemann.de>
+  - Provided under the terms of the MIT license.
   
 
 Overview
