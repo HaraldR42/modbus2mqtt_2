@@ -1,0 +1,112 @@
+# Example config file for polling a Eastron SDM72 power meter
+# Includes options for Home Assistant integration
+
+Daemon:
+  mqtt-host: mqtt.server.at.some.addr
+  tcp: some.modbis.scp.addr
+
+  add-to-homeassistant: true
+  hass-discovery-prefix: homeassistant/discovery
+
+Devices:
+
+  - name: powermeter0
+    slave-id: 1
+    manufacturer: Eastron
+    model: SDM72D-M-2-MID 
+
+    Pollers:
+      - start-reg: 0 
+        len-regs: 18
+        reg-type: input_register
+        poll-rate: 5
+        Default-readable: true
+        Default-writeable: false
+        Default-data-type: float32LE
+        Default-format-str: "%.1f"
+        Default-hass_entity_type: sensor
+        Default-state_class: measurement
+        References:
+          - topic: voltageP1
+            start-reg: 0
+            unit_of_measurement: V
+            device_class: voltage
+          - topic: voltageP2
+            start-reg: 2
+            unit_of_measurement: V
+            device_class: voltage
+          - topic: voltageP3
+            start-reg: 4
+            unit_of_measurement: V
+            device_class: voltage
+          - topic: currentP1
+            start-reg: 6
+            unit_of_measurement: A
+            device_class: current
+          - topic: currentP2
+            start-reg: 8
+            unit_of_measurement: A
+            device_class: current
+          - topic: currentP3
+            start-reg: 10
+            unit_of_measurement: A
+            device_class: current
+          - topic: powerP1
+            start-reg: 12
+            format-str: "%.2f"
+            unit_of_measurement: W
+            device_class: power
+          - topic: powerP2
+            start-reg: 14
+            format-str: "%.2f"
+            unit_of_measurement: W
+            device_class: power
+          - topic: powerP3
+            start-reg: 16
+            format-str: "%.2f"
+            unit_of_measurement: W
+            device_class: power
+
+      - start-reg: 52
+        len-regs: 2
+        reg-type: input_register
+        poll-rate: 5      
+        Default-readable: true
+        Default-writeable: false
+        Default-data-type: float32LE
+        Default-hass_entity_type: sensor
+        Default-state_class: measurement
+        References:
+          - topic: powerT
+            start-reg: 52
+            format-str: "%.2f"
+            unit_of_measurement: W
+            device_class: power
+
+      - start-reg: 70
+        len-regs: 6
+        reg-type: input_register
+        poll-rate: 15      
+        Default-readable: true
+        Default-writeable: false
+        Default-data-type: float32LE
+        Default-hass_entity_type: sensor
+        Default-state_class: measurement
+        References:
+          - topic: freq
+            start-reg: 70
+            format-str: "%.2f"
+            unit_of_measurement: Hz
+            device_class: frequency
+          - topic: energyIn
+            start-reg: 72
+            format-str: "%.3f"
+            unit_of_measurement: kWh
+            device_class: energy
+          - topic: energyOut
+            start-reg: 74
+            format-str: "%.3f"
+            unit_of_measurement: kWh
+            device_class: energy
+            
+
