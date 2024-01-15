@@ -189,6 +189,7 @@ class ConfigYaml:
         try:
             topic = this_ref_opts['topic']
             start_reg = this_ref_opts['start-reg']
+            write_reg = this_ref_opts['write-reg']
             is_readable = this_ref_opts['readable']
             is_writeable = this_ref_opts['writeable']
             data_type = this_ref_opts['data-type']
@@ -199,7 +200,7 @@ class ConfigYaml:
                 logger.error(f'Reference neither readable nor writeable. Ignoring device/referece {curr_poller.device.name}/{this_ref_opts["topic"]}.')
                 config_error_count += 1
                 return
-            new_ref = Reference( config_source, mqttc, curr_poller, topic, start_reg, is_readable, is_writeable, data_type, scaling, format_str, hass_entity_type, this_hass_ref_opts)
+            new_ref = Reference( config_source, mqttc, curr_poller, topic, start_reg, write_reg, is_readable, is_writeable, data_type, scaling, format_str, hass_entity_type, this_hass_ref_opts)
         except Exception as e:
             logger.error( f'Config error parsing device/referece {curr_poller.device.name}/{this_ref_opts["topic"]} ({config_source}): {e}')
             config_error_count += 1

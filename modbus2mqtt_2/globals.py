@@ -76,6 +76,7 @@ poller_opts = {
 ref_opts = {
     'topic':                None,
     'start-reg':            None,
+    'write-reg':            None,
     'readable':             True,
     'writeable':            False,
     'data-type':            None,

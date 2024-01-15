@@ -36,12 +36,12 @@ Main improvements and changes over spicierModbus2mqtt:
     - Command line options still provided for compatibility. Commandline overrules config file.
     - Introduced device specification. Hierarchy is now Device -> Poller -> Reference
     - Old CSV format still supported, but not all features available.
-- Massively improved Home Assistant integration
+- Massively improved Home Assistant (HASS) integration
     - Minimal integration almost out of the box
-    - Additional home assistant properties can be set for each device and reference
+    - Additional HASS properties can be set for each device and reference
     - Default option setting possible to reduce config file size
 - Optional printf like MQTT output formatting for references (only via yaml)
-- More flexibility in mqtt topic specificaton
+- Optionally, references can have different modbus registers for writing than reading. Especially for supporting Wago devices.
 - "Publish always" extended to cyclic forced publishing (or always)
 - Modbus values published without retain flag. This changes the default behaviour from spicierModbus2mqtt, but can be switched on by option.
 - Cyclic publishing all values (even unchanged ones) in a configurable interval possible (not necessarily on every modbus read)
@@ -50,7 +50,7 @@ Installation
 ------------
 Requirements:
 
-* python3.12
+* python3.11
 * Eclipse Paho for Python - http://www.eclipse.org/paho/clients/python/
 * pymodbus - https://github.com/riptideio/pymodbus
 * jsons

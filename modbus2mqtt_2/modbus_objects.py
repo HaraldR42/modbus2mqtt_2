@@ -239,16 +239,16 @@ class Device:
             time.sleep(0.002)
             if fct_code_write == 5:
                 if not isinstance(value,list) :
-                    result = await self.modbus_master.master.write_coil(the_ref.start_reg, value, slave=self.slaveid)
+                    result = await self.modbus_master.master.write_coil(the_ref.write_reg, value, slave=self.slaveid)
                 else:
-                    result = await self.modbus_master.master.write_coils(the_ref.start_reg, value, slave=self.slaveid)
+                    result = await self.modbus_master.master.write_coils(the_ref.write_reg, value, slave=self.slaveid)
             elif fct_code_write == 6 :
                 if not isinstance(value,list) and deamon_opts['avoid-fc6'] :
                     value = [ value ]
                 if not isinstance(value,list) :
-                    result = await self.modbus_master.master.write_register(the_ref.start_reg, value, slave=self.slaveid)
+                    result = await self.modbus_master.master.write_register(the_ref.write_reg, value, slave=self.slaveid)
                 else:
-                    result = await self.modbus_master.master.write_registers(the_ref.start_reg, value, slave=self.slaveid)
+                    result = await self.modbus_master.master.write_registers(the_ref.write_reg, value, slave=self.slaveid)
         except Exception as e:
             raise Exception(f'Error writing to Modbus (device:{self.name} topic:{full_topic}): {e}')
         
@@ -392,7 +392,7 @@ class Reference:
     # Instance methods
     #
     
-    def __init__(self, config_source, mqttc:MqttClient, poller:Poller, topic:str, start_reg:int, 
+    def __init__(self, config_source, mqttc:MqttClient, poller:Poller, topic:str, start_reg:int, write_reg:int,
                 is_readable:bool, is_writeable:bool, data_type:str, scale:float, format_str:str, 
                 hass_entity_type:str=None, ha_properties:dict=dict()):
         self.config_source = config_source
@@ -400,6 +400,7 @@ class Reference:
         self.poller = poller
         self.topic = MqttClient.clean_topic(topic, is_single_part=True)
         self.start_reg = start_reg
+        self.write_reg = write_reg
         self.is_readable = is_readable 
         self.is_writeable = is_writeable
         self.scale = scale
@@ -411,6 +412,8 @@ class Reference:
             self.start_reg = self.poller.start_reg
             logger.warning(f'start-reg not given for topic "{topic}", assuming poller\'s start-reg.')
         self.start_reg_relative = self.start_reg-self.poller.start_reg
+        if self.is_writeable and self.write_reg==None:
+            self.write_reg = self.start_reg
         self.last_val = None
         self.last_val_time = 0
 
