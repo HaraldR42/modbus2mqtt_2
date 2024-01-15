@@ -2,6 +2,7 @@ import logging
 
 __version__ = "0.1.0"
 __myname__ = "modbus2mqtt_2"
+__min_version__ = (3,11)
 
 logging.basicConfig()
 logger = logging.getLogger('main-logger')
@@ -66,7 +67,7 @@ device_opts = {
 # Configuration options for poller section with default values
 poller_opts = {
     'start-reg':    None,
-    'len-regs':     None,
+    'len-regs':     1,
     'reg-type':     'coil',
     'poll-rate':    15.0,   
 }
@@ -77,7 +78,7 @@ ref_opts = {
     'start-reg':            None,
     'readable':             True,
     'writeable':            False,
-    'data-type':            'int16',
+    'data-type':            None,
     'scaling':              None,
     'format-str':           None,
     'hass_entity_type':     None,

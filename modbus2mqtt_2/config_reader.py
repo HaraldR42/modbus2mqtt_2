@@ -88,6 +88,7 @@ class ConfigYaml:
         global config_error_count
         this_dev_opts = dict(device_opts) # create our own copy to make changes
         this_hass_dev_opts = dict(HassDevice.get_config_options()) # create our own copy to make changes
+        default_poller_opts = dict(poller_opts)
 
         # pop all device options and hass-device options
         for dev_key in list(dev_dict):
@@ -95,6 +96,8 @@ class ConfigYaml:
                 this_dev_opts[dev_key] = dev_dict.pop(dev_key)
             elif dev_key in this_hass_dev_opts:
                 this_hass_dev_opts[dev_key] = dev_dict.pop(dev_key)
+            elif dev_key.startswith('Default-') and (dev_key.removeprefix('Default-') in default_poller_opts):
+                default_poller_opts[dev_key.removeprefix('Default-')] = dev_dict.pop(dev_key)
 
         try:
             the_dev_name = this_dev_opts['name']
@@ -108,7 +111,7 @@ class ConfigYaml:
         # pop all pollers
         pollers_list = dev_dict.pop('Pollers', [])
         for poller in pollers_list:
-            ConfigYaml._parse_poller_dict( poller, config_source, new_device, mqttc)
+            ConfigYaml._parse_poller_dict( poller, default_poller_opts, config_source, new_device, mqttc)
         if len(pollers_list) == 0:
             logger.warning( f'No pollers defined for device {new_device.name}')
 
@@ -120,9 +123,9 @@ class ConfigYaml:
         config_error_count += local_errors
 
 
-    def _parse_poller_dict(poller_dict:dict, config_source:ConfigSource, curr_device:Device, mqttc:MqttClient) -> None:
+    def _parse_poller_dict(poller_dict:dict, default_poller_opts:dict, config_source:ConfigSource, curr_device:Device, mqttc:MqttClient) -> None:
         global config_error_count
-        this_poller_opts = dict(poller_opts) # create our own copy to make changes
+        this_poller_opts = dict(default_poller_opts) # create our own copy to make changes
         this_default_ref_opts = dict(ref_opts) # create our own copy to make changes
         this_default_hass_opts = HassEntity.get_all_config_opts() # create our own copy to make changes
 
@@ -215,13 +218,12 @@ class ConfigYaml:
 # Parsing legacy CSV config files
 #
 
-class ConfigNewCsv:
+class ConfigSpicierCsv:
 
     # CSV file format:
-    #    0,          1,        2,       3,        4,       5,         6
-    #  dev, deviceName,  slaveId
-    # poll,   startReg,  lenRegs, regType, pollRate
-    #  ref,  topicName, startReg,      rw, dataType, scaling, formatStr
+    #    0,          1,        2,        3,        4,       5,         6
+    # poll,    devName,  slaveId, startReg,  lenRegs, regType,  pollRate
+    #  ref,  topicName, startReg,       rw, dataType, scaling, formatStr
 
     def read_devices( csv_file, mqttc:MqttClient, modbus_master:ModbusMaster) -> None:        
         with csv_file as csvfile:
@@ -233,41 +235,34 @@ class ConfigNewCsv:
                 if len(row) == 0 :
                     continue
                 line_num = reader.line_num
-                line_type = row[0]
-                if line_type == "device" or line_type == "dev":
-                    curr_device = ConfigNewCsv._parse_device_line(row, ConfigSource( csv_file, line_num), mqttc, modbus_master)
-                elif line_type == "poller" or line_type == "poll":
-                    curr_poller = ConfigNewCsv._parse_poller_line(row, ConfigSource( csv_file, line_num), curr_device, mqttc)
+                line_type = row[0].lower()
+
+                if line_type == "poller" or line_type == "poll":
+                    curr_poller = ConfigSpicierCsv._parse_poller_line(row, ConfigSource( csv_file, line_num), mqttc, modbus_master)
                 elif line_type == "reference" or line_type == "ref":
-                    ConfigNewCsv._parse_reference_line(row, ConfigSource( csv_file, line_num), curr_poller, mqttc)
+                    ConfigSpicierCsv._parse_reference_line(row, ConfigSource( csv_file, line_num), curr_poller, mqttc)
+                else:
+                    pass # simply ignore every other line type
 
 
-    def _parse_device_line(row, config_source:ConfigSource, mqttc:MqttClient, modbus_master:ModbusMaster) -> Device:
+    def _parse_poller_line(row, config_source:ConfigSource, mqttc:MqttClient, modbus_master:ModbusMaster) -> Poller:
         global config_error_count
         try:
-            device_name = row[1]
+            device_name = str(row[1])
             slaveid = int(row[2])
-            dev = Device(config_source, mqttc, modbus_master, device_name, slaveid)
-            return dev
-        except Exception as e:
-            logger.error( f'Config error ({config_source}): {e}')
-            config_error_count += 1
-            return None
-        
+            start_reg = int(row[3])
+            len_regs = int(row[4])
+            reg_type = str(row[5])
+            poll_rate = float(row[6])
 
-    def _parse_poller_line(row, config_source:ConfigSource, curr_device:Device, mqttc:MqttClient) -> Poller:
-        global config_error_count
-        if curr_device is None:
-            logger.error( f'No device defined. Ignoring poller in {config_source}.')
-            config_error_count += 1
-            return None
-        
-        try:
-            start_reg = int(row[1])
-            len_regs = int(row[2])
-            reg_type = row[3]
-            poll_rate = float(row[4])
-            poller = Poller( config_source, curr_device, start_reg, len_regs, reg_type, poll_rate)
+            if device_name in Device.all_devices:
+                the_dev:Device = Device.all_devices[device_name]
+                if the_dev.slaveid != slaveid:
+                    raise ValueError(f'Conflicting poller lines, same topic {device_name} but different slaveid {the_dev.slaveid} vs. {slaveid}.')
+            else:
+                the_dev = Device(config_source, mqttc, modbus_master, device_name, slaveid)
+
+            poller = Poller( config_source, the_dev, start_reg, len_regs, reg_type, poll_rate)
             return poller
         except Exception as e:
             logger.error( f'Config error ({config_source}): {e}')
@@ -286,9 +281,9 @@ class ConfigNewCsv:
             topic = row[1]
             start_reg = int(row[2])
             rw = row[3]
-            data_type = row[4]
+            data_type = row[4] if len(row)>4 else None
             scaling = float(row[5]) if len(row)>5 else None
-            format_str = row[6] if len(row)>6 else None
+            #format_str = row[6] if len(row)>6 else None
 
             is_readable = True if "r" in rw else False
             is_writeable = True if "w" in rw else False
@@ -298,7 +293,7 @@ class ConfigNewCsv:
                 config_error_count += 1
                 return
             
-            new_ref = Reference( config_source, mqttc, curr_poller, topic, start_reg, is_readable, is_writeable, data_type, scaling, format_str)
+            new_ref = Reference( config_source, mqttc, curr_poller, topic, start_reg, is_readable, is_writeable, data_type, scaling, None)
 
         except Exception as e:
             logger.error( f'Config error ({config_source}): {e}')

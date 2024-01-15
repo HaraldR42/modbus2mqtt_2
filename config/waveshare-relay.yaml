@@ -1,0 +1,38 @@
+
+Daemon:
+  mqtt-host: mqtt.roelle.home
+  tcp: modbus1.ha.roelle.home
+
+  add-to-homeassistant: false
+  hass-discovery-prefix: homeassistant/discovery
+
+Devices:
+
+  - name: modbus1.ha.roelle.home:502-1
+    slave-id: 1
+    manufacturer: Eastron
+    model: SDM72D-M-2-MID 
+
+    Pollers:
+      - start-reg: 0 
+        len-regs: 8
+        reg-type: coil
+        poll-rate: 5
+        Default-writeable: True
+        References:
+          - topic: relay-1
+            start-reg: 0
+          - topic: relay-2
+            start-reg: 1
+          - topic: relay-3
+            start-reg: 2
+          - topic: relay-4
+            start-reg: 3
+          - topic: relay-5
+            start-reg: 4
+          - topic: relay-6
+            start-reg: 5
+          - topic: relay-7
+            start-reg: 6
+          - topic: relay-8
+            start-reg: 7

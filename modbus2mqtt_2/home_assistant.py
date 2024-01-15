@@ -155,6 +155,8 @@ class HassEntity :
 
     @classmethod
     def get_valid_config_opts(cls, entity_type) -> dict:
+        if entity_type == None:
+            return dict()
         if entity_type not in HassEntity._all_entity_types:
             raise LookupError( f'Entity type {entity_type} unknown')
         return HassEntity._all_entity_types[entity_type]._get_config_opts_recursive()

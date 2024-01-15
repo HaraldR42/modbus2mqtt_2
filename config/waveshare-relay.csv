@@ -1,0 +1,9 @@
+poll,waveshare-relay,1,0,8,coil,1
+ref,relay1,0,rw
+ref,relay2,1,rw
+ref,relay3,2,rw
+ref,relay4,3,rw
+ref,relay5,4,rw
+ref,relay6,5,rw
+ref,relay7,6,rw
+ref,relay8,7,rw

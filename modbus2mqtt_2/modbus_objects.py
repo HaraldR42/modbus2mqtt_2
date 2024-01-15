@@ -6,7 +6,7 @@ from pymodbus.client import (
     AsyncModbusTcpClient
 )
 
-from .data_types import DataTypeConversion
+from .data_types import DataConverter
 from .mqtt_client import MqttClient
 from .globals import logger, deamon_opts
 
@@ -169,7 +169,7 @@ class Device:
 
     def register_reference( self, new_ref:'Reference') -> None :
         if new_ref.topic in self.references:
-            raise LookupError( f'Topic "{new_ref.topic}" from {new_ref.config_source} already exists in device "+{self.name}"')
+            raise LookupError( f'Topic "{new_ref.topic}" from {new_ref.config_source} already exists in device "{self.name}"')
         self.mqttc.register_reference_topics( self.name, new_ref.topic, new_ref.is_writeable)
         self.references[new_ref.topic] = new_ref
 
@@ -230,7 +230,7 @@ class Device:
             return
         
         try:
-            value = the_ref.data_converter.str2mb_fct( payload_str)
+            value = the_ref.data_converter.str2mb( payload_str)
         except Exception as e:
             raise Exception(f'Error converting MQTT value "{payload_str}" from "{full_topic}" for writing to Modbus: {e}')
                     
@@ -256,7 +256,8 @@ class Device:
             raise Exception(f'Error writing to Modbus (device:{self.name} topic:{full_topic}): {result}')
         
         # writing was successful => we can assume, that the corresponding state can be set and published
-        the_ref.publish_value( value)
+        if the_ref.is_readable:
+            the_ref.publish_value( value)
 
 
 class Poller:
@@ -379,6 +380,13 @@ class Poller:
 
 class Reference:
 
+    _default_data_type_by_fc = {
+         3:     "uint16",   # holding_register
+         1:     "bool",     # coil
+         4:     "uint16",   # holding_register
+         2:     "bool",     # coil
+    }
+
     #==================================================================================================================
     #
     # Instance methods
@@ -398,23 +406,29 @@ class Reference:
         self.format_str = format_str
         self.hass_entity_type = hass_entity_type
         self.ha_properties = ha_properties
-        self.data_converter = DataTypeConversion.get_data_converter( data_type)
+
+        if self.start_reg == None:
+            self.start_reg = self.poller.start_reg
+            logger.warning(f'start-reg not given for topic "{topic}", assuming poller\'s start-reg.')
         self.start_reg_relative = self.start_reg-self.poller.start_reg
         self.last_val = None
         self.last_val_time = 0
 
+        if not data_type or data_type=="":
+            data_type = Reference._default_data_type_by_fc[poller.function_code]
+        self.data_converter = DataConverter( data_type)
+
         if self.is_writeable and self.poller.function_code_write is None:
             raise ValueError(f'Writing requested for non-writeable poller (discrete input or input register) at {config_source}')
 
-
         if self.start_reg not in range(self.poller.start_reg, self.poller.start_reg+self.poller.len_regs) or self.start_reg+self.data_converter.reg_cnt-1 not in range(self.poller.start_reg, self.poller.start_reg+self.poller.len_regs):
-            raise ValueError()  # XXX Add error message        
+            raise ValueError(f'Registers out of range of associated poller at {config_source}')
 
         self.poller.register_reference( self)
 
 
     def publish_value(self, raw_val:list[int]) -> None:
-        pub_val = self.data_converter.mb2py_fct( raw_val)
+        pub_val = self.data_converter.mb2py(raw_val)
         pub_time = time.monotonic()
         if self.scale:
             pub_val = pub_val * self.scale

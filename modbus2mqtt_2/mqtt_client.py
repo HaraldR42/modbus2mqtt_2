@@ -102,8 +102,8 @@ class MqttClient:
         logger.debug(f'Published MQTT topic: {self.get_topic_reference_value(device_name,topic)} value: {value} RC: {publish_result.rc}')
 
     def publish_hass_autodiscovery_entity(self, rel_topic:str, value:str) -> None :
-        publish_result = self.mqc.publish(f'{self.get_topic_hass_autoconfig(rel_topic)}', value, retain=self.retain_values)
-        logger.debug(f'Published MQTT topic: {self.get_topic_hass_autoconfig(rel_topic)} value: {value} RC: {publish_result.rc}')
+        publish_result = self.mqc.publish(f'{self.get_topic_hass_autoconfig(rel_topic)}', value, retain=True)
+        logger.debug(f'Published hass autodiscovery: {self.get_topic_hass_autoconfig(rel_topic)} value: {value} RC: {publish_result.rc}')
 
 
     #------------------------------------------------------------------------------------------------------------------

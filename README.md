@@ -28,22 +28,23 @@ Special support is provided for Home Assistant.
 
 Why _2 ?
 --------
-Main improvements over spicierModbus2mqtt:
+Main improvements and changes over spicierModbus2mqtt:
 - Almost complete rewrite, polling architecture remains unchanged
 - Improved modularization of code
 - Changed config file format to yaml:
     - All daemon options can (and should) go into the yaml file
-    - Command line options still provided for compatibility
+    - Command line options still provided for compatibility. Commandline overrules config file.
     - Introduced device specification. Hierarchy is now Device -> Poller -> Reference
+    - Old CSV format still supported, but not all features available.
 - Massively improved Home Assistant integration
-    - Minimal integration out of the box
+    - Minimal integration almost out of the box
     - Additional home assistant properties can be set for each device and reference
     - Default option setting possible to reduce config file size
-- Optional printf like MQTT output formatting for references
+- Optional printf like MQTT output formatting for references (only via yaml)
 - More flexibility in mqtt topic specificaton
 - "Publish always" extended to cyclic forced publishing (or always)
-- Modbus values published without retain flag. Can be switched on by option.
-- Cyclic publishing all values (even unchanged ones) in a configurable interval possible
+- Modbus values published without retain flag. This changes the default behaviour from spicierModbus2mqtt, but can be switched on by option.
+- Cyclic publishing all values (even unchanged ones) in a configurable interval possible (not necessarily on every modbus read)
 
 Installation
 ------------

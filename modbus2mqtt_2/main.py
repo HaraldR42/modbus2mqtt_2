@@ -56,7 +56,7 @@ import asyncio
 import modbus2mqtt_2.globals as globs
 import modbus2mqtt_2.config_reader as config_reader
 
-from .config_reader import ConfigNewCsv, ConfigYaml
+from .config_reader import ConfigYaml, ConfigSpicierCsv
 from .globals import logger, deamon_opts
 from .modbus_objects import ModbusMaster, Device, Poller, Reference
 from .mqtt_client import MqttClient
@@ -74,14 +74,19 @@ class MainControl:
         MainControl.run_loop = False
 
     def signal_handler(signal, frame):
-        logger.info('Exiting ' + sys.argv[0])
+        logger.info(f'Exiting {globs.__myname__}')
         MainControl.stop_loop()
 
 
 def main():
-    parser = argparse.ArgumentParser( description='Bridge between ModBus and MQTT')
+    if sys.version_info < globs.__min_version__:
+        logger.fatal(f'{globs.__myname__} requires at least python {globs.__min_version__}. Exiting.')
+        sys.exit(1)
 
-    parser.add_argument('--config', required=True, type=argparse.FileType('r'), help='Configuration file. Required!')
+    parser = argparse.ArgumentParser(prog=globs.__myname__,description='Bridge between ModBus and MQTT')
+# XXX remove default
+    parser.add_argument('--config', default="config/wago-352-530-430.yaml", type=argparse.FileType('r'), help='Configuration file. Required!')
+    #parser.add_argument('--config', default="config/local.yaml", required=True, type=argparse.FileType('r'), help='Configuration file. Required!')
 
     connTypeGroup = parser.add_mutually_exclusive_group(required=False)
     connTypeGroup.add_argument('--rtu', help='pyserial URL (or port name) for RTU serial port')
@@ -142,7 +147,7 @@ def main():
     if deamon_opts['mqtt-port'] is None:
         deamon_opts['mqtt-port'] = 8883 if deamon_opts['mqtt-use-tls'] else 1883
 
-    logger.info( f'Starting spiciermodbus2mqtt V{globs.__version__}')
+    logger.info( f'Starting {globs.__myname__} V{globs.__version__}')
 
     # Setup MQTT Broker
     globs.mqtt_client = MqttClient(
@@ -167,7 +172,7 @@ def main():
         sys.exit(1)
 
     if args.config.name.endswith('.csv'):
-        ConfigNewCsv.read_devices(args.config, globs.mqtt_client, modbus_master)
+        ConfigSpicierCsv.read_devices(args.config, globs.mqtt_client, modbus_master)
     else:
         ConfigYaml.read_devices(args.config, globs.mqtt_client, modbus_master)
     if config_reader.config_error_count > 0:
