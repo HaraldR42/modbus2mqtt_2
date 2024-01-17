@@ -1,13 +1,11 @@
 import logging
 
-__version__ = "0.1.0"
+__version__ = "0.2.0"
 __myname__ = "modbus2mqtt_2"
 __min_version__ = (3,11)
 
 logging.basicConfig()
 logger = logging.getLogger('main-logger')
-
-mqtt_client = None
 
 
 ###################################################################################################################
@@ -48,7 +46,6 @@ deamon_opts = {
 
     # Modbus running options: Modbus related options during running
     'set-modbus-timeout':       1.0,                # Response time-out for Modbus devices
-    'set-loop-break':           0.05,               # Set pause in main polling loop in sec. Defaults to 0.05 = 50ms.
     'avoid-fc6':                False,              # If set, use function code 16 (write multiple registers) even when just writing a single register
 
     # Misc options
@@ -75,11 +72,11 @@ poller_opts = {
 # Configuration options for reference section with default values
 ref_opts = {
     'topic':                None,
-    'start-reg':            None,
+    'start-reg':            None, # if undefined, the poller's start-reg will be used
     'write-reg':            None,
     'readable':             True,
     'writeable':            False,
-    'data-type':            None,
+    'data-type':            None, # if undefined, a default depending on the poller type will be used
     'scaling':              None,
     'format-str':           None,
     'hass_entity_type':     None,

@@ -3,7 +3,7 @@ import paho.mqtt.client as mqtt
 import queue
 import socket
 
-from .globals import logger, deamon_opts
+from .globals import logger
 
 
 class MqttClient:
@@ -44,8 +44,7 @@ class MqttClient:
         self.topic_base = MqttClient.clean_topic( topic_base.rstrip('/'))
         self.topic_hass_autodisco_base =  MqttClient.clean_topic( topic_hass_autodisco_base.rstrip('/'))
         self.clientid = MqttClient.clean_topic(f'mb2mqtt-{socket.gethostname().split(".")[0]}', is_single_part=True)
-
-        self.set_request_queue = queue.SimpleQueue()
+        self.modbus_writer = None
 
         self.unique_topic_publish_list = list()
         self.unique_topic_subscribe_list = list()
@@ -67,6 +66,8 @@ class MqttClient:
                 self.mqc.tls_insecure_set(True)
         logger.debug("MQTT client created")
 
+    def set_modbus_writer(self, modbus_writer):
+        self.modbus_writer = modbus_writer
 
     def make_initial_connection(self) -> bool :
         # Only publish messages after the initial connection has been made. 
@@ -228,4 +229,4 @@ class MqttClient:
         logger.log( level, f'MQTT log: {buf}')
 
     def on_message_callback(self, mqc, userdata, msg):
-        self.set_request_queue.put((userdata, msg))
+        self.modbus_writer.add_set_request(userdata, msg)

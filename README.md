@@ -7,7 +7,7 @@ modbus2mqtt_2
 Written and (c) 2024 by Harald Roelle
 Provided under the terms of the GPL 3.0 license.
 
-Contains a bunch of code/architecture taken from:
+Contains some ideas/code/architecture taken from:
 - modbus2mqtt - Modbus master with MQTT publishing
   - Written and (C) 2015 by Oliver Wagner <owagner@tellerulam.com>
   - Provided under the terms of the MIT license.
@@ -29,7 +29,8 @@ Special support is provided for Home Assistant.
 Why _2 ?
 --------
 Main improvements and changes over spicierModbus2mqtt:
-- Almost complete rewrite, polling architecture remains unchanged
+- Almost complete rewrite
+- Completely async main loop / polling.
 - Improved modularization of code
 - Changed config file format to yaml:
     - All daemon options can (and should) go into the yaml file
@@ -53,6 +54,7 @@ Requirements:
 * python3.11
 * Eclipse Paho for Python - http://www.eclipse.org/paho/clients/python/
 * pymodbus - https://github.com/riptideio/pymodbus
+* pyyaml
 * jsons
 
 Installation of requirements:

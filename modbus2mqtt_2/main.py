@@ -36,21 +36,17 @@
 #
 # To be tested:
 # - Serial modbus
-# - Setting coils
 # - Everything about holding_register
 #
 # Features to implement
 # - List data types
 # - MQTT topic path
 # - reenable logic
-# - check python version
-# - Use variable for daemon name, argparse setup
 
 
 import argparse
 import time
 import sys
-import signal
 import asyncio
 
 import modbus2mqtt_2.globals as globs
@@ -58,24 +54,33 @@ import modbus2mqtt_2.config_reader as config_reader
 
 from .config_reader import ConfigYaml, ConfigSpicierCsv
 from .globals import logger, deamon_opts
-from .modbus_objects import ModbusMaster, Device, Poller, Reference
+from .modbus_objects import ModbusMaster, ModbusWriter, Device, Poller
 from .mqtt_client import MqttClient
 from .home_assistant import HassConnector
 
 
-class MainControl:
-    run_loop = False
+class DiagnosticsMaster:
 
-    def prepare_loop_start():
-        MainControl.run_loop = True
-        signal.signal(signal.SIGINT, MainControl.signal_handler)
+    def __init__(self, diag_rate) -> None:
+        self.diag_rate = diag_rate
+        self.runtask = None
 
-    def stop_loop():
-        MainControl.run_loop = False
+    def run_workloop(self, task_group):
+        if self.diag_rate > 0:
+            self.runtask = task_group.create_task(self._workloop())
 
-    def signal_handler(signal, frame):
-        logger.info(f'Exiting {globs.__myname__}')
-        MainControl.stop_loop()
+    async def _workloop(self):
+        try:
+            while True:
+                for dev in Device.all_devices.values():
+                    try:
+                        await dev.publish_diagnostics()
+                    except Exception as e:
+                        logger.error(f'Publishing device diagnostics for {dev}: {e}')
+                await asyncio.sleep(self.diag_rate)
+
+        except asyncio.exceptions.CancelledError as e:
+            logger.debug(f'Diagnostics task stopped ({self}).')
 
 
 def main():
@@ -115,7 +120,6 @@ def main():
     mbWorkGroup = parser.add_argument_group( 'Modbus running options', 'Modbus related options during running')
     mbWorkGroup.add_argument('--set-modbus-timeout', type=float, help=f'Response time-out for Modbus devices. Default: "{deamon_opts["set-modbus-timeout"]}"')
     #mbWorkGroup.add_argument('--autoremove', action='store_true', help='Automatically remove poller if modbus communication has failed three times. Removed pollers can be reactivated by sending "True" or "1" to topic modbus/reset-autoremove')
-    mbWorkGroup.add_argument('--set-loop-break', type=float, help=f'Set pause in main polling loop in sec. Default: "{deamon_opts["set-loop-break"]}"')
     mbWorkGroup.add_argument('--avoid-fc6', type=bool, help=f'If set, use function code 16 (write multiple registers) even when just writing a single register. Default: "{deamon_opts["avoid-fc6"]}"')
 
     miscGroup = parser.add_argument_group('Misc options', '')
@@ -126,7 +130,7 @@ def main():
     args = parser.parse_args()
 
     # First parse daemon config from yaml
-    if not args.config.name.endswith('.csv'):
+    if args.config.name.endswith('.yaml'):
         ConfigYaml.read_daemon_config(args.config)
     if config_reader.config_error_count > 0:
         logger.critical("Configuration error. Exiting.")
@@ -149,8 +153,7 @@ def main():
 
     logger.info( f'Starting {globs.__myname__} V{globs.__version__}')
 
-    # Setup MQTT Broker
-    globs.mqtt_client = MqttClient(
+    mqtt_client = MqttClient(
                         mqtt_host=deamon_opts['mqtt-host'], 
                         mqtt_port=deamon_opts['mqtt-port'], 
                         mqtt_user=deamon_opts['mqtt-user'], 
@@ -160,8 +163,11 @@ def main():
                         mqtt_tls_version=deamon_opts['mqtt-tls-version'], 
                         topic_base=deamon_opts['mqtt-topic'],
                         topic_hass_autodisco_base=deamon_opts['hass-discovery-prefix'],
-                        retain_values=deamon_opts['retain-values']
-                        )
+                        retain_values=deamon_opts['retain-values'])
+
+    diag_master = DiagnosticsMaster(deamon_opts['diagnostics-rate'])
+    modbus_writer = ModbusWriter(mqtt_client)
+    mqtt_client.set_modbus_writer(modbus_writer)
 
     if deamon_opts['rtu']:
         modbus_master = ModbusMaster.new_modbus_rtu_master(deamon_opts['rtu'], deamon_opts['rtu-parity'], deamon_opts['rtu-baud'], deamon_opts['set-modbus-timeout'])
@@ -172,9 +178,9 @@ def main():
         sys.exit(1)
 
     if args.config.name.endswith('.csv'):
-        ConfigSpicierCsv.read_devices(args.config, globs.mqtt_client, modbus_master)
+        ConfigSpicierCsv.read_devices(args.config, mqtt_client, modbus_master)
     else:
-        ConfigYaml.read_devices(args.config, globs.mqtt_client, modbus_master)
+        ConfigYaml.read_devices(args.config, mqtt_client, modbus_master)
     if config_reader.config_error_count > 0:
         logger.critical("Configuration error. Exiting.")
         sys.exit(1)
@@ -185,72 +191,46 @@ def main():
 
     logger.info(f'Config file {args.config.name} successfully read.')
 
-    asyncio.run(async_main(modbus_master), debug=False)
+    try:
+        asyncio.run(async_main(mqtt_client, modbus_writer, modbus_master, diag_master), debug=False)
+    except KeyboardInterrupt as e: 
+        pass
+
+    logger.critical(f'{globs.__myname__} stopped. Exiting.')
+
+    for dev in Device.all_devices.values() :
+        dev.disable()
 
 
-async def async_main(modbus_master:ModbusMaster):
+async def async_main(mqtt_client:MqttClient, modbus_writer:ModbusWriter, modbus_master:ModbusMaster, diag_master:DiagnosticsMaster):
     logger.debug("Starting main loop.")
-    MainControl.prepare_loop_start()
 
-    # Loop until initial connection to mqtt server is made. Reconnect is handled my mqtt client internally.
-    mqtt_connected = False
-    while MainControl.run_loop and not mqtt_connected:
-        mqtt_connected = globs.mqtt_client.make_initial_connection()
-        if not mqtt_connected:
+    # Loop until initial connection to mqtt server is made. Reconnect is handled by mqtt client internally.
+    try:
+        while not mqtt_client.make_initial_connection():
             time.sleep(0.5)
-    if not mqtt_connected:
+    except (KeyboardInterrupt, SystemExit) as e:
         logger.critical(f'Stopped before initial MQTT connect. Exiting.')
         sys.exit(1)
 
     # Setup HomeAssistant after mqtt client is up
     if deamon_opts['add-to-homeassistant']:
         try:
-            HassConnector.publish_hass_autodiscovery(globs.mqtt_client)
+            HassConnector.publish_hass_autodiscovery(mqtt_client)
         except Exception as e:
             logger.error( f'Error setting up homeassistant autodiscovery: {e}')
- 
+     
     # Now comes the real main loop
-    current_poller = 0
-    while MainControl.run_loop:
-        time.sleep(deamon_opts['set-loop-break'])
+    try:
+        async with asyncio.TaskGroup() as tg:
+            modbus_master.run_workloop(tg)
+            modbus_writer.run_workloop(tg)
+            diag_master.run_workloop(tg)
+            for poller in Poller.all_poller:
+                poller.run_workloop(tg)
+    except Exception as e:
+        logger.critical( f'Fatal error in main loop: {e}')
+    except (asyncio.exceptions.CancelledError, KeyboardInterrupt) as e:
+        pass
 
-        modbus_connected = await modbus_master.check_connect()
 
-        for dev in Device.all_devices.values():
-            dev.publish_diagnostics()
-
-        if not modbus_connected:
-            time.sleep(0.5)
-            continue
-
-        try:
-            await Poller.all_poller[current_poller].check_poll()
-
-            await Device.process_set_requests(globs.mqtt_client)
-
-            #XXX New reenable logic required
-            #anyAct = False
-            #for p in Poller.all_poller:
-            #    if p.disabled is not True:
-            #        anyAct = True
-            #if not anyAct:
-            #    time.sleep(0.010)
-            #    for p in pollers:
-            #        if p.disabled == True:
-            #            p.disabled = False
-            #            p.failcounter = 0
-            #            globs.logger.info("Reactivated poller "+p.topic+" with Slave-ID "+str(
-            #                p.slaveid) + " and functioncode "+str(p.functioncode)+".")
-
-        except Exception as e:
-            logger.error( "Error: "+str(e)+" when polling or publishing, trying again...")
-
-        current_poller = current_poller + 1
-        if current_poller == len(Poller.all_poller):
-            current_poller = 0
-    
-    for dev in Device.all_devices.values() :
-        dev.disable()
-    modbus_master.master.close()
-
-    sys.exit(1)
