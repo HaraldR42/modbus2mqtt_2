@@ -50,12 +50,12 @@ Requirements:
 - jsons
 
 ### Installation of requirements:
-* Install python3 and python3-pip and python3-serial</br>
+1. Install python3 and python3-pip and python3-serial<br>
   On a Debian based system, something like `sudo apt install python3 python3-pip python3-serial` will likely get you there.
-* run `pip3 install pymodbus`
-* run `pip3 install paho-mqtt`
-* run `pip3 install pyyaml`
-* run `pip3 install jasons`
+1. run `pip3 install pymodbus`
+1. run `pip3 install paho-mqtt`
+1. run `pip3 install pyyaml`
+1. run `pip3 install jasons`
 
 ## Usage
 * example for rtu and mqtt broker on localhost: `python3 modbus2mqtt.py --rtu /dev/ttyS0 --rtu-baud 38400 --rtu-parity none --mqtt-host localhost  --config testing.csv`
@@ -63,45 +63,46 @@ Requirements:
     on localhost: `python3 modbus2mqtt.py --tcp localhost --config testing.csv`
     remotely:     `python3 modbus2mqtt.py --tcp 192.168.1.7 --config example.csv --mqtt-host mqtt.eclipseprojects.io`
 
-For docker support see below.
+## Docker
      
 ## Configuration file
 
 ## MQTT
 
+### Value publishing
 Values are published as strings to topic:
 
-`\<*prefix*\>/\<*device-name*\>/state/\<*reference-topic*\>"
+`\<*prefix*\>/\<*device-name*\>/state/\<*reference-topic*\>`
+
+A value will be calculated from the raw value by:
+  1. Applying a transformation according to the option `XXX`.
+  2. Optionally, multiplying it by a scaling factor given by option `XXX`
+  3. Optionally, formatting according to option `XXX`. This is a `printf`-like format string.<br>
+     For example, to publish a value as a voltage value with one decimal place and the unit included: `XXX %.1fV`
 
 A value will be published if:
   - It's formatted/calculated data has changed
-  - Optionally, in a configurable regular interval, now matter if data has changed (option XXX)
-The published MQTT messages do not have the retain flag set, but it can be turned on by the option XXX
+  - Optionally, in a configurable regular interval, no matter if data has changed (option `XXX`)
 
+The published MQTT messages do not have the retain flag set, but it can be turned on by the option `XXX`
 
-A special topic "prefix/connected" is maintained. 
-It states whether the module is currently running and connected to 
-the broker (1) and to the Modbus interface (2).
+### Availability / liveness publishing
 
-We also maintain a "connected"-Topic for each poller (prefix/poller_topic/connected). This is useful when using Modbus RTU with multiple slave devices because a non-responsive device can be detected.
+To indicate if the daemon is alive, the following topic is maintained:<br>
+`\<*prefix*\>/\<*mqtt-client-name*\>/connected/`<br>
+`\<*mqtt-client-name*\>` is derived from the hostname or XXX
 
+To indicate the liveness of certain device, the following topic is set accordingly:<br>
+`\<*prefix*\>/\<*device-name*\>/value/connected/`<br>
+
+### Diagnostics
 For diagnostic purposes (mainly for Modbus via serial) the topics prefix/poller_topic/state/diagnostics_errors_percent and prefix/poller_topic/state/diagnostics_errors_total are available. This feature can be enabled by passing the argument "--diagnostics-rate X" with x being the amount of seconds between each recalculation and publishing of the error rate in percent and the amount of errors within the time frame X. Set X to something like 600 to get diagnostic messages every 10 minutes.
 
-Writing to Modbus coils and registers
-------------------------------------------------
+### Writing to Modbus coils and registers
 
-spiciermodbus2mqtt subscribes to:
+For writeable references (option XXX) the daemon subscribes to 
+`\<*prefix*\>/\<*device-name*\>/set/\<*reference-topic*\>`
 
-"prefix/poller topic/set/reference topic"
-
-
-If you want to write to a coil:
-
-mosquitto_pub -h <mqtt broker> -t modbus/somePoller/set/someReference -m "True"
-
-to a register:
-
-mosquitto_pub -h <mqtt broker> -t modbus/somePoller/set/someReference -m "12346"
-
+On receiving a message from MQTT, the inferse transformation for XXX will be applied and the data is written to the Modbus device.
 
 ## References
