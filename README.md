@@ -1,9 +1,6 @@
 # modbus2mqtt_2
 Yet another Modbus master which publishes via MQTT
 
-modbus2mqtt_2
-==================
-
 Written and (c) 2024 by Harald Roelle
 Provided under the terms of the GPL 3.0 license.
 
@@ -16,8 +13,7 @@ Contains some ideas/code/architecture taken from:
   - Provided under the terms of the MIT license.
   
 
-Overview
---------
+## Overview
 modbus2mqtt_2 is a Modbus master which continuously polls slaves and publishes
 values via MQTT.
 
@@ -26,8 +22,7 @@ an MQTT message broker is used as the centralized message bus.
 
 Special support is provided for Home Assistant.
 
-Why _2 ?
---------
+## Why _2 ?
 Main improvements and changes over spicierModbus2mqtt:
 - Almost complete rewrite
 - Completely async main loop / polling.
@@ -47,8 +42,7 @@ Main improvements and changes over spicierModbus2mqtt:
 - Modbus values published without retain flag. This changes the default behaviour from spicierModbus2mqtt, but can be switched on by option.
 - Cyclic publishing all values (even unchanged ones) in a configurable interval possible (not necessarily on every modbus read)
 
-Installation
-------------
+## Installation
 Requirements:
 
 * python3.11
@@ -57,14 +51,13 @@ Requirements:
 * pyyaml
 * jsons
 
-Installation of requirements:
+### Installation of requirements:
 
 * Install python3 and python3-pip and python3-serial (on a Debian based system something like sudo apt install python3 python3-pip python3-serial will likely get you there)
 * run pip3 install pymodbus
 * run pip3 install paho-mqtt
 
-Usage
------
+## Usage
 * example for rtu and mqtt broker on localhost: `python3 modbus2mqtt.py --rtu /dev/ttyS0 --rtu-baud 38400 --rtu-parity none --mqtt-host localhost  --config testing.csv`
 * example for tcp slave and mqtt broker
     on localhost: `python3 modbus2mqtt.py --tcp localhost --config testing.csv`
@@ -72,12 +65,80 @@ Usage
 
 For docker support see below.
      
-Configuration file
--------------------
+## Configuration file
 
-TO BE CONTINUED
+modbus2mqtt_2 supports two basic variants of configuration:
+1. Commandline + .csv file
+This is the original way of spicierModbus2mqtt. It is still supported, but doesn't offer all features, especially on HASS integration. 
+For details see https://github.com/mbs38/spicierModbus2mqtt#configuration-file.
+Not recommended.
+> Please note: Some configuration options changed from spicierModbus2mqtt. Also some of the defaults. Please review your commandline when using this variant
+1. YAML configuration file
+Setting all options by a YAML file. The only commandline option required is using `--config` to point to config file.
+
+### YAML based configuration
+The YAML config has two main parts:
+1. Daemon:
+Here go all options that config the MQTT broker connection and the Modbus interface.
+It replaces all commandline options.
+2. Devices:
+This is where the definition of devices, pollers and references go.
+It replaces the .csv file.
+
+#### YAML `Daemon:` options
+    Daemon:
+      rtu: null
+      tcp: null
+      mqtt-host: localhost
+      mqtt-port: null
+      mqtt-user: null
+      mqtt-pass: ''
+      mqtt-use-tls: false
+      mqtt-insecure: false
+      mqtt-cacerts: null
+      mqtt-tls-version: null
+      mqtt-topic: modbus/
+      publish-seconds: 300
+      retain-values: false
+      rtu-baud: 19200
+      rtu-parity: even
+      tcp-port: 502
+      set-modbus-timeout: 1.0
+      avoid-fc6: false
+      diagnostics-rate: 0
+      add-to-homeassistant: false
+      hass-discovery-prefix: homeassistant
+      verbosity: debug
+
+#### YAML `Devices:` options
+    Devices:
+    - name: null
+      slave-id: null
+
+#### YAML `Pollers:` options
+      Pollers:
+      - start-reg: null
+        len-regs: 1
+        reg-type: coil
+        poll-rate: 15.0
+
+#### YAML `References:` options
+        References:
+        - topic: null
+          start-reg: null
+          write-reg: null
+          readable: true
+          writeable: false
+          data-type: null
+          scaling: null
+          format-str: null
+          hass_entity_type: null
+
 
 ### Home Assistant Options (HASS)
+The following options are only required if one has enabled HASS integration.
+For simplicity, just some snippets from the code are provided.
+For more extensive information on the options, please see the HASS documentation of the MQTT integration and discovery (https://www.home-assistant.io/integrations/mqtt/#mqtt-discovery)
 
 #### HASS Device Options
     # --- User settable options ---------------------------------------------------------------
