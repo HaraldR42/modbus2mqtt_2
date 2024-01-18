@@ -72,7 +72,7 @@ Requirements:
 ### Value publishing
 Values are published as strings to topic:
 
-\<*`prefix`*\>/\<*device-name*\>/state/\<*reference-topic*\>
+*`prefix`*/*`device-name`*/state/*`reference-topic`*
 
 A value will be calculated from the raw value by:
   1. Applying a transformation according to the option `XXX`.
