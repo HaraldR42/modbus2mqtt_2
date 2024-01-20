@@ -204,14 +204,14 @@ For `Pollers:` and `References:`, default options can be set in the hierarchy on
             Default-reference-option: default-value-for-references-below
             References:
 
-See the [example config file for WAGO I/O](config/wago-352-530-430.yaml). It illustrates quite well how one can write compact config files by using the default mechanism.
+See the [example config file for WAGO I/O](/config/wago-352-530-430.yaml). It illustrates quite well how one can write compact config files by using the default mechanism.
 
 ## Home Assistant Options (HASS)
 The following options are only required if one has enabled HASS integration.
 For simplicity, just some snippets from the code are provided.
 For more extensive information on the options, please see the HASS documentation of the MQTT integration and discovery (https://www.home-assistant.io/integrations/mqtt/#mqtt-discovery)
 
-See also the [example config file for Eastron power meter](config/eastron-sdm72.yaml). There you can see how one could use the additional HASS options.
+See also the [example config file for Eastron power meter](/config/eastron-sdm72.yaml). There you can see how one could use the additional HASS options.
 
 ### HASS Device Options
     # --- User settable options ---------------------------------------------------------------
