@@ -1,44 +1,40 @@
 # modbus2mqtt_2
-Yet another Modbus master which publishes via MQTT
+Yet another Modbus master which publishes via MQTT (and vice versa).<br>
+As there are many others, it's name is pronounced *modbus2mqtt* **too** ;-)
 
 Written and (c) 2024 by Harald Roelle</br>
 Provided under the terms of the GPL 3.0 license.
 
-Contains some ideas/code/architecture taken from:
-- modbus2mqtt - Modbus master with MQTT publishing
-  - Written and (C) 2015 by Oliver Wagner <owagner@tellerulam.com>
-  - Provided under the terms of the MIT license.
-- spicierModbus2mqtt - Modbus master with MQTT publishing
+Contains ideas/code/architecture taken from:
+- *spicierModbus2mqtt* - Modbus master with MQTT publishing
   - Written and (C) 2018 by Max Brueggemann <mail@maxbrueggemann.de>
-  - Provided under the terms of the MIT license.
-  
+  - Provided under the terms of the MIT license.  
 
 ## Overview
-modbus2mqtt_2 is a Modbus master which continuously polls slaves and publishes values via MQTT.
+*modbus2mqtt_2* is a Modbus master which continuously polls slaves and publishes values via MQTT.
 
 It is intended as a building block in heterogeneous smart home environments where 
-an MQTT message broker is used as the centralized message bus.
-
-Special support is provided for Home Assistant (HASS).
+an MQTT message broker is used as the centralized message bus.<br>
+**Special support is provided for Home Assistant (HASS).**
 
 ## Why _2 ?
-Main improvements and changes over spicierModbus2mqtt:
+Main improvements and changes over *spicierModbus2mqtt*:
 - Almost complete rewrite
-- Completely async main loop / polling.
+- Completely async main loop / polling. Very fast, at least with TCP.
 - Improved modularization of code
 - Changed config file format to yaml:
     - All daemon options can (and should) go into the yaml file
     - Command line options still provided for compatibility. Commandline overrules config file.
     - Introduced device specification. Hierarchy is now Device -> Poller -> Reference
-    - Old CSV format still supported, but not all features available.
+    - Old CSV format still supported, but not all features are available.
 - Massively improved Home Assistant (HASS) integration
-    - Minimal integration almost out of the box
-    - Additional HASS properties can be set for each device and reference
+    - Minimal integration almost out of the box, just obe option needs to be provided
+    - Additional HASS properties can be set for each device and reference in the config file
     - Default option setting possible to reduce config file size
 - Optional printf like MQTT output formatting for references (only via yaml)
 - Optionally, references can have different modbus registers for writing than reading. Especially for supporting Wago devices.
 - "Publish always" extended to cyclic forced publishing (or always)
-- Modbus values published without retain flag. This changes the default behaviour from spicierModbus2mqtt, but can be switched on by option.
+- Modbus values published without retain flag. This changes the default behaviour from *spicierModbus2mqtt*, but can be switched on by option.
 - Cyclic publishing all values (even unchanged ones) in a configurable interval possible (not necessarily on every modbus read)
 
 ## Installation
@@ -55,54 +51,95 @@ Requirements:
 1. run `pip3 install pymodbus`
 1. run `pip3 install paho-mqtt`
 1. run `pip3 install pyyaml`
-1. run `pip3 install jasons`
+1. run `pip3 install jsons`
 
-## Usage
-* example for rtu and mqtt broker on localhost: `python3 modbus2mqtt.py --rtu /dev/ttyS0 --rtu-baud 38400 --rtu-parity none --mqtt-host localhost  --config testing.csv`
-* example for tcp slave and mqtt broker
-    on localhost: `python3 modbus2mqtt.py --tcp localhost --config testing.csv`
-    remotely:     `python3 modbus2mqtt.py --tcp 192.168.1.7 --config example.csv --mqtt-host mqtt.eclipseprojects.io`
+## Configuration and usage
+
+*modbus2mqtt_2* supports two basic variants of configuration:
+
+1. Commandline + .csv file (legacy and limited)<br>
+   `python3 modbus2mqtt.py --config path-to-file.csv ... (lots of command-line options)`
+2. YAML configuration file (new, with all features)<br>
+   `python3 modbus2mqtt.py --config path-to-file.yaml`
+
+Please see XXX for details.
 
 ## Docker
-     
-## Configuration file
+TO BE DONE
+
+## Tested Modbus devices and feedback
+- Power meter **Eastron** **SDM72D-M-2-MID** via **Waveshare** 
+- Decentralized I/O from **WAGO**:
+  - Ethernet head unit model **750-352**
+  - Digital output model **750-530**
+  - Digital input model **750-430**
+- **Waveshare** **8-ch Ethernet Relay Module, Modbus TCP**
+
+> All testing has been done only via Modbus TCP. Please provide **any** experience with other devices via the Github Issue Tracker, especially when connected with Modbus RTU!
 
 ## MQTT
 
 ### Value publishing
 Values are published as strings to topic:
 
-*`prefix`*/*`device-name`*/state/*`reference-topic`*
+*`mqtt-topic`* **/** *`device-name`* **/ state /** *`reference-topic`*<br>
+- The prefix of all MQTT topics can be specified by option `mqtt-topic`
+- The *`device-name`* is specified by option `name` in the "Devices" section
+- the *`reference-topic`* is specified by option `topic` in the "References" section of a device
 
-A value will be calculated from the raw value by:
-  1. Applying a transformation according to the option `XXX`.
-  2. Optionally, multiplying it by a scaling factor given by option `XXX`
-  3. Optionally, formatting according to option `XXX`. This is a `printf`-like format string.<br>
-     For example, to publish a value as a voltage value with one decimal place and the unit included: `XXX %.1fV`
+A value will be calculated from the raw Modbus value by:
+  1. Applying a transformation according to the option `data-type`.
+  2. Optionally, multiplying it by a scaling factor given by option `scaling`
+  3. Optionally, formatting according to option `format-str`. This is a *printf*-like format string.<br>
+     For example, to publish a *float32* as a voltage value with one decimal place and the unit included: `format-str: "%.1fV"`
 
 A value will be published if:
-  - It's formatted/calculated data has changed
-  - Optionally, in a configurable regular interval, no matter if data has changed (option `XXX`)
+  - It's formatted/calculated data has changed (This changed from *spicierModbus2mqtt*)
+  - Optionally, in a configurable regular interval, no matter if data has changed (option `publish-seconds`)
 
-The published MQTT messages do not have the retain flag set, but it can be turned on by the option `XXX`
+The published value messages do not have the MQTT retain flag set, but it can be turned on by the option `retain-values` (different to *spicierModbus2mqtt*).
 
 ### Availability / liveness publishing
 
-To indicate if the daemon is alive, the following topic is maintained:<br>
-`\<*prefix*\>/\<*mqtt-client-name*\>/connected/`<br>
-`\<*mqtt-client-name*\>` is derived from the hostname or XXX
+To indicate if *modbus2mqtt_2* is alive, the following topic is maintained:<br>
+*`mqtt-topic`* **/** *`mqtt-client-name`* **/ connected**<br>
+*`mqtt-client-name`* is derived from the hostname or XXX. Publishing is done as MQTT last-will-and-testament (LWT). Therefore the status shall be correct even if *modbus2mqtt_2* dies unexpectedly.
 
 To indicate the liveness of certain device, the following topic is set accordingly:<br>
-`\<*prefix*\>/\<*device-name*\>/value/connected/`<br>
+*`mqtt-topic`* **/** *`device-name`* **/ connected**<br>
+As this value is handled by *modbus2mqtt_2* alone, this value might be wrong when *modbus2mqtt_2* died unexpectedly.
 
 ### Diagnostics
-For diagnostic purposes (mainly for Modbus via serial) the topics prefix/poller_topic/state/diagnostics_errors_percent and prefix/poller_topic/state/diagnostics_errors_total are available. This feature can be enabled by passing the argument "--diagnostics-rate X" with x being the amount of seconds between each recalculation and publishing of the error rate in percent and the amount of errors within the time frame X. Set X to something like 600 to get diagnostic messages every 10 minutes.
+For diagnostic purposes (mainly for Modbus via serial) the topic path <br>
+*`mqtt-topic`* **/** *`device-name`* **/** **diagnostics / ...**<br>
+is available. This feature can be enabled by passing the option `diagnostics-rate` with the amount of seconds between each recalculation and publishing the diagnostic infos.
 
 ### Writing to Modbus coils and registers
 
-For writeable references (option XXX) the daemon subscribes to 
-`\<*prefix*\>/\<*device-name*\>/set/\<*reference-topic*\>`
+For writeable references (option `writeable`) *modbus2mqtt_2* subscribes to <br>
+*`mqtt-topic`* **/** *`device-name`* **/ set /** *`reference-topic`* <br>
+On receiving a message from MQTT, the inverse transformation for `data-type` will be applied and the data is written to the Modbus device.
 
-On receiving a message from MQTT, the inferse transformation for XXX will be applied and the data is written to the Modbus device.
+### Data types
+For rendering the raw Modbus data, the following `data-type` values are supported
+- `bool`
+- `int16`
+- `uint16`
+- `int32LE`
+- `int32BE`
+- `uint32LE`
+- `uint32BE`
+- `float32LE`
+- `float32BE`
+- `stringN` with `N` being an even number of characters
+- **Attention:** The *listUint16* data type of *spicierModbus2mqtt* is not yet supported
 
 ## References
+This work is the result personally not being satisfied with existing solutions (and me being in the mood to get my hands dirty :-)<br>
+Nevertheless there are at some other projects that might better suit your needs (in no particular order, list is incomplete for sure):
+- https://github.com/mbs38/spicierModbus2mqtt
+- https://github.com/gavinying/modpoll
+- https://github.com/BlackZork/mqmgateway
+- https://github.com/owagner/modbus2mqtt
+- https://github.com/Instathings/modbus2mqtt
+- https://github.com/mazocode/modbus2mqtt
