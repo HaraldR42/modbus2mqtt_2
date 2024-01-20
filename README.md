@@ -66,10 +66,19 @@ Please see [Configuration Documentation](doc/config.md) for details.<br>
 Also have a look at the example configurations provided in the [config directory](config)
 
 ## Docker
-TO BE DONE
+*modbus2mqtt_2* can be run as a docker container, using the included Dockerfile. It allows all usual configuration options, with the expectation that it's configuration is at `/app/conf/modbus2mqtt_2.yaml`. For example:
+
+To build the image:
+
+`docker build -t modbus2mqtt_2 .`
+
+To run the image:
+
+`docker run -v $(pwd)/config/wago-352-530-430.yaml:/app/conf/modbus2mqtt_2.yaml --name modbus2mqtt_2 --hostname docker-m2m_2 -e TZ=Europe/Berlin modbus2mqtt_2`
+
 
 ## Tested Modbus devices and feedback
-- Power meter **Eastron** **SDM72D-M-2-MID** via **Waveshare** 
+- Power meter **Eastron** **SDM72D-M-2-MID** via **Waveshare** **RS485 TO ETH (B)**
 - Decentralized I/O from **WAGO**:
   - Ethernet head unit model **750-352**
   - Digital output model **750-530**
@@ -137,7 +146,7 @@ For rendering the raw Modbus data, the following `data-type` values are supporte
 
 ## References
 This work is the result of personally not being satisfied with existing solutions (and me being in the mood to get my hands dirty :-)<br>
-Nevertheless there are at some other projects that might better suit your needs better (in no particular order, list is incomplete for sure):
+Nevertheless there are at some other projects that might suit your needs better (in no particular order, list is incomplete for sure):
 - https://github.com/mbs38/spicierModbus2mqtt
 - https://github.com/gavinying/modpoll
 - https://github.com/BlackZork/mqmgateway
