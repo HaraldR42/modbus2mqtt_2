@@ -61,9 +61,7 @@ def main():
         sys.exit(1)
 
     parser = argparse.ArgumentParser(prog=globs.__myname__,description='Bridge between ModBus and MQTT')
-# XXX remove default
-    parser.add_argument('--config', default="config/wago-352-530-430.yaml", type=argparse.FileType('r'), help='Configuration file. Required!')
-    #parser.add_argument('--config', default="config/local.yaml", required=True, type=argparse.FileType('r'), help='Configuration file. Required!')
+    parser.add_argument('--config', default="config.yaml", type=argparse.FileType('r'), help='Configuration file. Required!')
 
     connTypeGroup = parser.add_mutually_exclusive_group(required=False)
     connTypeGroup.add_argument('--rtu', help='pyserial URL (or port name) for RTU serial port')

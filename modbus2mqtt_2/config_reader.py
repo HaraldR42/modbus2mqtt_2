@@ -34,6 +34,16 @@ class ConfigSource:
 #
 
 class ConfigYaml:
+    
+    def print_yaml_options() -> None:
+        root = { }
+        root['Daemon'] = dict(deamon_opts)
+        dev= dict(device_opts)
+        root['Devices'] = [ dev ]
+        root['Devices'][0]['Pollers'] = [ dict(poller_opts) ]
+        root['Devices'][0]['Pollers'][0]['References'] = [ dict(ref_opts) ]
+        print( yaml.dump(root,sort_keys=False))
+        
 
     def read_daemon_config(yaml_file) -> None:
         global config_error_count
