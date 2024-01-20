@@ -1,14 +1,14 @@
 # Configuration of modbus2mqtt_2
 
-*modbus2mqtt_2* supports two basic variants of configuration.
+*modbus2mqtt_2* supports two basic variants of configuration:
 
-## Commandline + .csv file
+## Command line + .csv file
 
 This is the original way of *spicierModbus2mqtt*. It is still supported, but doesn't offer all features, especially on HASS integration.<br>
 Not recommended any longer.<br>
-> Please note: Some configuration options changed from *spicierModbus2mqtt*. Also some of the defaults. Please review your commandline when using this variant
+> Please note: Some configuration options changed from *spicierModbus2mqtt*. Also some of the defaults. Please review your command line when using this variant
 
-### Commandline options
+### Command line options
     -h, --help            show this help message and exit
     --config CONFIG       Configuration file. Required!
     --rtu RTU             pyserial URL (or port name) for RTU serial port
@@ -74,14 +74,14 @@ Not recommended any longer.<br>
 For details see https://github.com/mbs38/spicierModbus2mqtt#configuration-file.
 
 ## YAML configuration file
-All options can be set by a YAML file. The only commandline option required is using `--config` to point to config file.
+All options can be set by a YAML file. The only command line option required is using `--config` to point to config file.
 
 ### Basic YAML structure
 The YAML config has two main parts:
 
 1. `Daemon:`
 Here go all options that config the MQTT broker connection and the Modbus interface.<br>
-It replaces all commandline options.
+It replaces all command line options.
 
 2. `Devices:`
 This is where the definition of devices, pollers and references go.<br>
@@ -134,7 +134,7 @@ The overall YAML structure looks like this
 
 
 ### YAML `Daemon:` options
-Below all daemon options and their default values. For a short description for the individual values, see the command-line section above.
+Below all daemon options and their default values. For a short description for the individual values, see the command line section above.
 
     Daemon:
       rtu: null
