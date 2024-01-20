@@ -1,4 +1,4 @@
-# Example config file for polling a Eastron SDM72 power meter
+# Example config file for polling an Eastron SDM72 power meter
 # Includes options for Home Assistant integration
 
 Daemon:

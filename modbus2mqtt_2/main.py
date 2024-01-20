@@ -1,38 +1,10 @@
 #!/usr/bin/env python
 #
-# modbus2mqtt_2 - Yeat another Modbus TCP/RTU to MQTT bridge (and vice versa)
+# modbus2mqtt_2 - Yet another Modbus TCP/RTU to MQTT bridge (and vice versa)
 # https://github.com/HaraldR42/modbus2mqtt_2
 #
 # Written in 2024 by Harald Roelle
-#
 # Provided under the terms of the GPL 3.0 License
-#
-# Contains a bunch of code/architecture taken from:
-# modbus2mqtt - Modbus master with MQTT publishing
-#   Written and (C) 2015 by Oliver Wagner <owagner@tellerulam.com>
-#   Provided under the terms of the MIT license.
-# spicierModbus2mqtt - Modbus master with MQTT publishing
-#   Written and (C) 2018 by Max Brueggemann <mail@maxbrueggemann.de>
-#   Provided under the terms of the MIT license.
-#
-# Main improvements over spicierModbus2mqtt:
-#   - Almost complete rewrite, polling architecture remains unchanged
-#   - Improved modularization of code
-#   - Changed config file format, unfortunately not compatible with spicierModbus2mqtt but quiete similar
-#     - No format description in the first line required
-#     - Introduced device specification. Hierarchy is now Device -> Poller -> Reference
-#     - Optional printf like output formatting for references
-#   - Massively improved Home Assistant integration
-#     - Minimal integration out of the box
-#     - Additional home assistant properties can be set for each reference
-#   - More flexibility in mqtt topic specificaton
-#   - "Publish always" extended to cyclic forced publishing (or always)
-#   - Modbus values published without retain flag. Can be switched on by option.
-#
-# Requires:
-# - Eclipse Paho for Python - http://www.eclipse.org/paho/clients/python/
-# - pymodbus - https://github.com/riptideio/pymodbus
-# - jsons
 #
 # To be tested:
 # - Serial modbus
@@ -41,7 +13,7 @@
 # Features to implement
 # - List data types
 # - MQTT topic path
-# - reenable logic
+# - Disable / reenable logic
 
 
 import argparse

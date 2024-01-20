@@ -1,17 +1,14 @@
 
 Daemon:
-  mqtt-host: mqtt.roelle.home
-  tcp: modbus1.ha.roelle.home
+  mqtt-host: some.address.here
+  tcp: some.address.here
 
   add-to-homeassistant: false
-  hass-discovery-prefix: homeassistant/discovery
 
 Devices:
 
-  - name: modbus1.ha.roelle.home:502-1
+  - name: relay-board-1
     slave-id: 1
-    manufacturer: Eastron
-    model: SDM72D-M-2-MID 
 
     Pollers:
       - start-reg: 0 

@@ -1,0 +1,152 @@
+#
+# Demo configuration for a simple Wago decentralized I/O setup:
+#   Head unit: 750-352 ETHERNET Fieldbus Coupler
+#   Module 1:  750-530 8-channel digital output 24 VDC
+#   Module 2:  750-430 8-channel digital input 24 VDC
+#
+
+Daemon:
+  mqtt-host: test.mosquitto.org
+  tcp: 172.29.2.176
+  add-to-homeassistant: false
+  verbosity: info
+
+Devices:
+
+  - name: wago-test
+    slave-id: 1
+    manufacturer: Wago
+    model: 750 series 352+530+430
+    Default-reg-type: input_register
+    Default-poll-rate: 300
+
+    Pollers:
+
+      # First module of station: 8bit DO module 750-530
+      - start-reg: 0x0200
+        reg-type: coil
+        len-regs: 8
+        poll-rate: 2
+        Default-readable: true
+        Default-writeable: true
+        References:
+          - topic: DO-0
+            start-reg: 0x0200
+            write-reg: 0x0000
+          - topic: DO-1
+            start-reg: 0x0201
+            write-reg: 0x0001
+          - topic: DO-2
+            start-reg: 0x0202
+            write-reg: 0x0002
+          - topic: DO-3
+            start-reg: 0x0203
+            write-reg: 0x0003
+          - topic: DO-4
+            start-reg: 0x0204
+            write-reg: 0x0004
+          - topic: DO-5
+            start-reg: 0x0205
+            write-reg: 0x0005
+          - topic: DO-6
+            start-reg: 0x0206
+            write-reg: 0x0006
+          - topic: DO-7
+            start-reg: 0x0207
+            write-reg: 0x0007
+
+      # Second module of station: 8bit DI module 750-430
+      - start-reg: 0x0000
+        reg-type: input_status
+        len-regs: 8
+        poll-rate: 2
+        Default-readable: true
+        Default-writeable: false
+        References:
+          - topic: DI-0
+            start-reg: 0x0000
+          - topic: DI-1
+            start-reg: 0x0001
+          - topic: DI-2
+            start-reg: 0x0002
+          - topic: DI-3
+            start-reg: 0x0003
+          - topic: DI-4
+            start-reg: 0x0004
+          - topic: DI-5
+            start-reg: 0x0005
+          - topic: DI-6
+            start-reg: 0x0006
+          - topic: DI-7
+            start-reg: 0x0007
+
+
+      # Configuration registers
+      - start-reg: 0x1030
+        reg-type: holding_register
+        poll-rate: 60
+        References:
+          - topic: conf-mbtcp-timeout
+            writeable: True
+
+      # Firmware information registers
+      - start-reg: 0x2010
+        References:
+          - topic: firmware-dev-revision
+      - start-reg: 0x2011
+        References:
+          - topic: firmware-dev-series
+      - start-reg: 0x2012
+        References:
+          - topic: firmware-dev-ordernum
+      - start-reg: 0x2013
+        References:
+          - topic: firmware-rev-major
+      - start-reg: 0x2014
+        References:
+          - topic: firmware-rev-minor
+      - start-reg: 0x2020
+        len-regs: 16
+        References:
+          - topic: firmware-info
+            data-type: string32
+      - start-reg: 0x2021
+        len-regs: 8
+        References:
+          - topic: firmware-rev-time
+            data-type: string16
+      - start-reg: 0x2022
+        len-regs: 8
+        References:
+          - topic: firmware-rev-date
+            data-type: string16
+      - start-reg: 0x2023
+        len-regs: 32
+        References:
+          - topic: firmware-loaderinfo
+            data-type: string64
+
+      # Constant registers, useful for testing
+      - start-reg: 0x2000 
+        len-regs: 7
+        References:
+          - topic: const-null # 0x0000
+            start-reg: 0x2000
+          - topic: const-minus-one # 0xffff
+            start-reg: 0x2001
+            data-type: int16
+          - topic: const-65535 # 0xffff
+            start-reg: 0x2001
+          - topic: const-4660  # 0x1234
+            start-reg: 0x2002
+          - topic: const-43690 # 0xaaaa
+            start-reg: 0x2003
+          - topic: const-21845 # 0x5555
+            start-reg: 0x2004
+          - topic: const-32767 # max-int
+            start-reg: 0x2005
+            data-type: int16
+          - topic: const-minus-32768 # min-int
+            start-reg: 0x2006
+            data-type: int16
+

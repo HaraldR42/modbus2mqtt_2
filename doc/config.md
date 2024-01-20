@@ -1,12 +1,12 @@
 # Configuration of modbus2mqtt_2
 
-modbus2mqtt_2 supports two basic variants of configuration:
+*modbus2mqtt_2* supports two basic variants of configuration.
 
-## 1. Commandline + .csv file
+## Commandline + .csv file
 
-This is the original way of `spicierModbus2mqtt`. It is still supported, but doesn't offer all features, especially on HASS integration.<br>
-Not recommended.<br>
-> Please note: Some configuration options changed from spicierModbus2mqtt. Also some of the defaults. Please review your commandline when using this variant
+This is the original way of *spicierModbus2mqtt*. It is still supported, but doesn't offer all features, especially on HASS integration.<br>
+Not recommended any longer.<br>
+> Please note: Some configuration options changed from *spicierModbus2mqtt*. Also some of the defaults. Please review your commandline when using this variant
 
 ### Commandline options
     -h, --help            show this help message and exit
@@ -73,24 +73,69 @@ Not recommended.<br>
 ### .csv file
 For details see https://github.com/mbs38/spicierModbus2mqtt#configuration-file.
 
-## 2. YAML configuration file
+## YAML configuration file
+All options can be set by a YAML file. The only commandline option required is using `--config` to point to config file.
 
-Setting all options by a YAML file. The only commandline option required is using `--config` to point to config file.
-
-### YAML based configuration
+### Basic YAML structure
 The YAML config has two main parts:
 
-1. Daemon:
-
+1. `Daemon:`
 Here go all options that config the MQTT broker connection and the Modbus interface.<br>
 It replaces all commandline options.
 
-2. Devices:
-
+2. `Devices:`
 This is where the definition of devices, pollers and references go.<br>
-It replaces the .csv file.
+It replaces the .csv file.<br>
 
-#### YAML `Daemon:` options
+The overall YAML structure looks like this
+
+    Daemon:
+      daemon-option: value
+      daemon-option: value
+      daemon-option: value
+
+    Devices:
+
+      - name: device-1
+        device-option: value
+        device-option: value
+        device-option: value
+        Pollers:
+          - start-reg: 0x0200 # First poller of first device
+            poller-option: value
+            poller-option: value
+            poller-option: value
+            References:
+              - topic: topic1
+                start-reg: 0x0200
+                reference-option: value
+              - topic: topic2
+                start-reg: 0x0201
+                reference-option: value
+          - start-reg: 0x0400 # Second poller of first device
+            References:
+              - topic: topic1
+                start-reg: 0x0400
+              - topic: topic2
+                start-reg: 0x0401
+
+      - name: device-2
+        Pollers:
+          - start-reg: 0x0200 # First poller of second device
+            References:
+              - topic: topic
+              - topic: topic2-2
+          - start-reg: 0x0400 # Second poller of second device
+            References:
+              - topic: topic1
+                start-reg: 0x0400
+              - topic: topic2
+                start-reg: 0x0401
+
+
+### YAML `Daemon:` options
+Below all daemon options and their default values. For a short description for the individual values, see the command-line section above.
+
     Daemon:
       rtu: null
       tcp: null
@@ -115,19 +160,20 @@ It replaces the .csv file.
       hass-discovery-prefix: homeassistant
       verbosity: debug
 
-#### YAML `Devices:` options
+
+### YAML `Devices:` options
     Devices:
     - name: null
       slave-id: null
 
-#### YAML `Pollers:` options
+### YAML `Pollers:` options
       Pollers:
       - start-reg: null
         len-regs: 1
         reg-type: coil
         poll-rate: 15.0
 
-#### YAML `References:` options
+### YAML `References:` options
         References:
         - topic: null
           start-reg: null
@@ -139,6 +185,20 @@ It replaces the .csv file.
           format-str: null
           hass_entity_type: null
 
+### Setting default values
+For `Pollers:` and `References:`, default options can be set in the hierarchy one level above by prepending `Default-` to any option. For example:
+
+    Devices:
+      - name: device-1
+        device-option: value
+        Default-poller-option: default-value-for-pollers-below
+        Pollers:
+          - start-reg: 0x0200 # First poller of first device
+            poller-option: value
+            Default-reference-option: default-value-for-references-below
+            References:
+
+See the example config file XXX. It illustrates quite well how one can write compact config files by using the default mechanism.
 
 ## Home Assistant Options (HASS)
 The following options are only required if one has enabled HASS integration.
