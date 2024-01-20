@@ -30,9 +30,9 @@ class MqttClient:
     # Instance methods
     #
 
-    def __init__(self, mqtt_host:str, mqtt_port:int, 
+    def __init__(self, mqtt_host:str, mqtt_port:int, mqtt_clientid:str,
                  mqtt_user:str, mqtt_pass:str, mqtt_cacerts:str, mqtt_insecure:bool, mqtt_tls_version:str, 
-                 topic_base:str, topic_hass_autodisco_base:str, retain_values:bool):
+                 topic_base:str, topic_hass_autodisco_base:str, retain_values:bool, mqtt_value_qos:int):
         self.mqtt_host = mqtt_host
         self.mqtt_port = mqtt_port
         self.mqtt_user = mqtt_user
@@ -41,9 +41,10 @@ class MqttClient:
         self.mqtt_insecure = mqtt_insecure
         self.mqtt_tls_version = mqtt_tls_version
         self.retain_values = retain_values
+        self.mqtt_value_qos = mqtt_value_qos
         self.topic_base = MqttClient.clean_topic( topic_base.rstrip('/'))
         self.topic_hass_autodisco_base =  MqttClient.clean_topic( topic_hass_autodisco_base.rstrip('/'))
-        self.clientid = MqttClient.clean_topic(f'mb2mqtt-{socket.gethostname().split(".")[0]}', is_single_part=True)
+        self.clientid = MqttClient.clean_topic(mqtt_clientid, is_single_part=True)
         self.modbus_writer = None
 
         self.unique_topic_publish_list = list()
@@ -88,10 +89,10 @@ class MqttClient:
     #
 
     def publish_daemon_availability(self, is_available:bool) -> None:
-        self.mqc.publish(self.get_topic_daemon_avail(), self.get_avail_message(is_available), qos=0, retain=True)
+        self.mqc.publish(self.get_topic_daemon_avail(), self.get_avail_message(is_available), qos=1, retain=True)
 
     def publish_device_availability(self, device_name:str, is_available:bool) -> None:
-        self.mqc.publish(self.get_topic_device_availability(device_name), self.get_avail_message(is_available), qos=0, retain=True)
+        self.mqc.publish(self.get_topic_device_availability(device_name), self.get_avail_message(is_available), qos=1, retain=True)
 
     def publish_device_diagnostics(self, device_name:str, poll_count:int, error_percent:int, error_count:int) -> None:
         self.mqc.publish(self.get_topic_device_diag_pollcount(device_name), str(poll_count), qos=0, retain=False)
@@ -99,7 +100,7 @@ class MqttClient:
         self.mqc.publish(self.get_topic_device_diag_errtotal(device_name), str(error_count), qos=0, retain=False)
 
     def publish_reference_state(self, device_name:str, topic:str, value:str) -> None :
-        publish_result = self.mqc.publish(f'{self.get_topic_reference_value(device_name,topic)}', value, retain=self.retain_values)
+        publish_result = self.mqc.publish(f'{self.get_topic_reference_value(device_name,topic)}', value, qos=self.mqtt_value_qos, retain=self.retain_values)
         logger.debug(f'Published MQTT topic: {self.get_topic_reference_value(device_name,topic)} value: {value} RC: {publish_result.rc}')
 
     def publish_hass_autodiscovery_entity(self, rel_topic:str, value:str) -> None :

@@ -20,67 +20,73 @@ Not recommended any longer.<br>
     --rtu RTU             pyserial URL (or port name) for RTU serial port
     --tcp TCP             Act as a Modbus TCP master, connecting to host TCP
 
-    MQTT broker options:
+  MQTT broker options:
     All options for connecting to an MQTT broker
 
     --mqtt-host MQTT_HOST
-                            MQTT server address. Default: "localhost"
+                          MQTT server address. Default: "localhost"
     --mqtt-port MQTT_PORT
-                            Defaults to 8883 for TLS or 1883 for non-TLS
+                          Defaults to 8883 for TLS or 1883 for non-TLS
+    --mqtt-clientid MQTT_CLIENTID
+                          ID of our MQTT client. Default: "mb2mqtt-<hostname>"
     --mqtt-user MQTT_USER
-                            Username for authentication (optional)
+                          Username for authentication (optional)
     --mqtt-pass MQTT_PASS
-                            Password for authentication (optional)
+                          Password for authentication (optional)
     --mqtt-use-tls MQTT_USE_TLS
-                            Use TLS. Default: "False"
+                          Use TLS. Default: "False"
     --mqtt-insecure MQTT_INSECURE
-                            Use TLS without providing certificates. Default: "False"
+                          Use TLS without providing certificates. Default: "False"
     --mqtt-cacerts MQTT_CACERTS
-                            Path to keychain
+                          Path to keychain
     --mqtt-tls-version {tlsv1.2,tlsv1.1,tlsv1}
-                            TLS protocol version, can be one of tlsv1.2 tlsv1.1 or tlsv1.
+                          TLS protocol version, can be one of tlsv1.2 tlsv1.1 or tlsv1.
 
-    MQTT publish options:
+  MQTT publish options:
     All options influencing the MQTT related behaviour
 
     --mqtt-topic MQTT_TOPIC
-                            Topic prefix to be used for subscribing/publishing. Default: "modbus/"
+                          Topic prefix to be used for subscribing/publishing. Default: "modbus/"
+    --mqtt-value-qos {0,1,2}
+                          QoS value for publishing values. Default: "0"
     --publish-seconds PUBLISH_SECONDS
-                            Publish values after n seconds (0=always), even if they did not change. Default: 300
+                          Publish values after n seconds (0=always), even if they did not change. Default: 300
     --retain-values RETAIN_VALUES
-                            Set retain flag for published modbus values. Default: "False"
+                          Set retain flag for published modbus values. Default: "False"
 
-    Modbus connection options:
+  Modbus connection options:
     All options influencing the Modbus connection related behaviour
 
     --rtu-baud RTU_BAUD   Baud rate for serial port. Default: "19200"
     --rtu-parity {even,odd,none}
-                            Parity for serial port. Default: "even"
+                          Parity for serial port. Default: "even"
     --tcp-port TCP_PORT   Port for MODBUS TCP. Default: "502"
 
-    Modbus running options:
+  Modbus running options:
     Modbus related options during running
 
     --set-modbus-timeout SET_MODBUS_TIMEOUT
-                            Response time-out for Modbus devices. Default: "1.0"
+                          Response time-out for Modbus devices. Default: "1.0"
     --avoid-fc6 AVOID_FC6
-                            If set, use function code 16 (write multiple registers) even when just writing a single register. Default:
-                            "False"
+                          If set, use function code 16 (write multiple registers) even when just writing a single register. Default: "False"
 
-    Misc options:
+  Misc options:
 
     --diagnostics-rate DIAGNOSTICS_RATE
-                            Time in seconds after which for each device diagnostics are published via mqtt. Default: "0"
+                          Time in seconds after which for each device diagnostics are published via mqtt. Default: "0"
     --add-to-homeassistant ADD_TO_HOMEASSISTANT
-                            Add devices to Home Assistant using Home Assistant's MQTT-Discovery. Default: "False"
+                          Add devices to Home Assistant using Home Assistant's MQTT-Discovery. Default: "False"
     --verbosity {debug,info,warning,error,critical}
-                            Verbosity level. Default: "debug"
+                          Verbosity level. Default: "info"
+
 
 ### .csv file
 For details see https://github.com/mbs38/spicierModbus2mqtt#configuration-file.
 
 ## YAML configuration file
 All options can be set by a YAML file. The only command line option required is using `--config` to point to config file.
+
+Command line option can be used to override options from the yaml config.
 
 ### Basic YAML structure
 The YAML config has two main parts:

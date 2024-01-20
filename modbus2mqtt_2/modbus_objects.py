@@ -174,12 +174,12 @@ class Device:
     #
 
     def disable(self) -> None :
-        if self.is_enabled():
+        if self.enabled: # do not use the method is_enabled() here. Just look at our own status!
             self.mqttc.publish_device_availability(self.name, False)
         self.enabled = False
 
     def enable(self) -> None :
-        if not self.is_enabled():
+        if not self.enabled: # do not use the method is_enabled() here. Just look at our own status!
             self.mqttc.publish_device_availability(self.name, True)
         self.enabled = True
 

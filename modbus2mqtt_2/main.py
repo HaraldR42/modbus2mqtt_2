@@ -70,6 +70,7 @@ def main():
     mqttBrokerGroup = parser.add_argument_group( 'MQTT broker options', 'All options for connecting to an MQTT broker')
     mqttBrokerGroup.add_argument('--mqtt-host', help=f'MQTT server address. Default: "{deamon_opts["mqtt-host"]}"')
     mqttBrokerGroup.add_argument('--mqtt-port', type=int, help='Defaults to 8883 for TLS or 1883 for non-TLS')
+    mqttBrokerGroup.add_argument('--mqtt-clientid', type=str, help=f'ID of our MQTT client. Default: "{deamon_opts["mqtt-clientid"]}"')
     mqttBrokerGroup.add_argument('--mqtt-user', help='Username for authentication (optional)')
     mqttBrokerGroup.add_argument('--mqtt-pass', help='Password for authentication (optional)')
     mqttBrokerGroup.add_argument('--mqtt-use-tls', type=bool, help=f'Use TLS. Default: "{deamon_opts["mqtt-use-tls"]}"')
@@ -79,6 +80,7 @@ def main():
 
     mqttPubGroup = parser.add_argument_group( 'MQTT publish options', 'All options influencing the MQTT related behaviour')
     mqttPubGroup.add_argument('--mqtt-topic', help=f'Topic prefix to be used for subscribing/publishing. Default: "{deamon_opts["mqtt-topic"]}"')
+    mqttPubGroup.add_argument('--mqtt-value-qos', type=int, choices=[0,1,2], help=f'QoS value for publishing values. Default: "{deamon_opts["mqtt-value-qos"]}"')
     mqttPubGroup.add_argument('--publish-seconds', type=int, help=f'Publish values after n seconds (0=always), even if they did not change. Default: {deamon_opts["publish-seconds"]}')
     mqttPubGroup.add_argument('--retain-values', type=bool, help=f'Set retain flag for published modbus values. Default: "{deamon_opts["retain-values"]}"')
 
@@ -126,6 +128,7 @@ def main():
     mqtt_client = MqttClient(
                         mqtt_host=deamon_opts['mqtt-host'], 
                         mqtt_port=deamon_opts['mqtt-port'], 
+                        mqtt_clientid=deamon_opts['mqtt-clientid'], 
                         mqtt_user=deamon_opts['mqtt-user'], 
                         mqtt_pass=deamon_opts['mqtt-pass'],
                         mqtt_cacerts=deamon_opts['mqtt-cacerts'], 
@@ -133,7 +136,8 @@ def main():
                         mqtt_tls_version=deamon_opts['mqtt-tls-version'], 
                         topic_base=deamon_opts['mqtt-topic'],
                         topic_hass_autodisco_base=deamon_opts['hass-discovery-prefix'],
-                        retain_values=deamon_opts['retain-values'])
+                        retain_values=deamon_opts['retain-values'],
+                        mqtt_value_qos=deamon_opts['mqtt-value-qos'])
 
     diag_master = DiagnosticsMaster(deamon_opts['diagnostics-rate'])
     modbus_writer = ModbusWriter(mqtt_client)

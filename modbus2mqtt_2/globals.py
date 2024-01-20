@@ -1,4 +1,5 @@
 import logging
+import socket
 
 __version__ = "0.2.0"
 __myname__ = "modbus2mqtt_2"
@@ -27,6 +28,7 @@ deamon_opts = {
     # MQTT broker options: All options for connecting to an MQTT broker
     'mqtt-host':                'localhost',        # MQTT server address. Defaults to "localhost"
     'mqtt-port':                None,               # Defaults to 8883 for TLS or 1883 for non-TLS
+    'mqtt-clientid':            f'mb2mqtt-{socket.gethostname().split(".")[0]}',
     'mqtt-user':                None,               # Username for authentication (optional)
     'mqtt-pass':                "",                 # Password for authentication (optional)
     'mqtt-use-tls':             False,              # Use TLS
@@ -36,6 +38,7 @@ deamon_opts = {
 
     # MQTT publish options: All options influencing the MQTT related behaviour
     'mqtt-topic':               'modbus/',          # Topic prefix to be used for subscribing/publishing. Defaults to "modbus/"
+    'mqtt-value-qos':           0,                  # QoS value for publishing values. Defaults to 0
     'publish-seconds':          300,                # Publish values after n seconds (0=always), even if they did not change.
     'retain-values':            False,              # Set retain flag for published modbus values.
 
@@ -52,7 +55,7 @@ deamon_opts = {
     'diagnostics-rate':         0,                  # Time in seconds after which for each device diagnostics are published via mqtt. Set to sth. like 600 (= every 10 minutes) or so.
     'add-to-homeassistant':     False,              # Add devices to Home Assistant using Home Assistant\'s MQTT-Discovery
     'hass-discovery-prefix':    'homeassistant',    # Add devices to Home Assistant using Home Assistant\'s MQTT-Discovery
-    'verbosity':                'debug',            # Verbosity level ('debug', 'info', 'warning', 'error', 'critical')
+    'verbosity':                'info',             # Verbosity level ('debug', 'info', 'warning', 'error', 'critical')
 }
 
 # Configuration options for device section with default values

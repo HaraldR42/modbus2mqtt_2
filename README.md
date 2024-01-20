@@ -113,7 +113,7 @@ The published value messages do not have the MQTT retain flag set, but it can be
 
 To indicate if *modbus2mqtt_2* is alive, the following topic is maintained:<br>
 *`mqtt-topic`* **/** *`mqtt-client-name`* **/ connected**<br>
-*`mqtt-client-name`* is derived from the hostname or XXX. Publishing is done as MQTT last-will-and-testament (LWT). Therefore, the status shall be correct even if *modbus2mqtt_2* dies unexpectedly.
+*`mqtt-client-name`* is derived from the hostname or set by `mqtt-clientid`. Publishing is done as MQTT last-will-and-testament (LWT). Therefore, the status shall be correct even if *modbus2mqtt_2* dies unexpectedly.
 
 To indicate the liveness of certain device, the following topic is set accordingly:<br>
 *`mqtt-topic`* **/** *`device-name`* **/ connected**<br>
