@@ -40,10 +40,10 @@ Main improvements and changes over *spicierModbus2mqtt*:
 ## Installation
 Requirements:
 - python3, version 3.11 or newer
-- Eclipse Paho for Python - http://www.eclipse.org/paho/clients/python/
-- pymodbus - https://github.com/riptideio/pymodbus
-- pyyaml
-- jsons
+- [Eclipse Paho for Python](http://www.eclipse.org/paho/clients/python/)
+- [pymodbus](https://github.com/riptideio/pymodbus)
+- [pyyaml](https://pyyaml.org/)
+- [jsons](https://github.com/ramonhagenaars/jsons)
 
 ### Installation of requirements:
 1. Install python3 and python3-pip and python3-serial<br>
@@ -55,7 +55,7 @@ Requirements:
 
 ## Configuration and usage
 
-*modbus2mqtt_2* supports two basic variants of configuration:
+*modbus2mqtt_2* supports two basic variants of configuration and launching:
 
 1. Command line + .csv file (legacy and limited)<br>
    `python3 modbus2mqtt.py --config path-to-file.csv ... (lots of command line options)`
