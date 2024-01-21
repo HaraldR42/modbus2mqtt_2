@@ -1,4 +1,5 @@
 import asyncio
+import copy
 import random
 import time
 
@@ -11,6 +12,29 @@ from .data_types import DataConverter
 from .mqtt_client import MqttClient
 from .globals import logger, deamon_opts
 
+
+class ModbusStats:
+    def __init__(self, writes_total:int=0, writes_error:int=0, reads_total:int=0, reads_error:int=0, timestamp:float=None):
+        self.writes_total = writes_total
+        self.writes_error = writes_error
+        self.reads_total = reads_total
+        self.reads_error = reads_error
+        self.timestamp = timestamp if timestamp!=None else time.monotonic()
+        
+    def snapshot(self):
+        snap = copy.copy(self)
+        snap.timestamp = time.monotonic()
+        return snap
+    
+    def diff_stat(self, old_snap):
+        return(ModbusStats(
+                writes_total=self.writes_total-old_snap.writes_total, 
+                writes_error=self.writes_error-old_snap.writes_error, 
+                reads_total=self.reads_total-old_snap.reads_total, 
+                reads_error=self.reads_error-old_snap.reads_error, 
+                timestamp=self.timestamp-old_snap.timestamp
+            ))
+ 
 
 class ModbusMaster:
 
@@ -48,6 +72,64 @@ class ModbusMaster:
         self.devices = list()
         self.runtask = None
         ModbusMaster.all_modbus_master.append(self)
+        self.modbuslock = asyncio.Lock()
+        self.stats = ModbusStats()
+        self.stats_last = None
+
+
+    async def write_to_slave(self, fct_code_write:int, write_reg, value, slaveid):
+        result = None
+        try:     
+            await self.modbuslock.acquire()
+            if fct_code_write == 5:
+                if not isinstance(value,list) :
+                    result = await self.master.write_coil(write_reg, value, slave=slaveid)
+                else:
+                    result = await self.master.write_coils(write_reg, value, slave=slaveid)
+            elif fct_code_write == 6 :
+                if not isinstance(value,list) and deamon_opts['avoid-fc6'] :
+                    value = [ value ]
+                if not isinstance(value,list) :
+                    result = await self.master.write_register(write_reg, value, slave=slaveid)
+                else:
+                    result = await self.master.write_registers(write_reg, value, slave=slaveid)
+            if result.isError() :
+                raise Exception(f'Error response from Modbus write call: {result.function_code}')
+        except Exception as e:
+            self.stats.writes_error += 1
+            raise e
+        finally:
+            self.modbuslock.release()
+            self.stats.writes_total += 1
+    
+
+    async def read_from_slave(self, function_code:int, start_reg:int, len_regs:int, slaveid:int):
+        result = None
+        try:
+            await self.modbuslock.acquire()
+            if function_code == 3:
+                result = await self.master.read_holding_registers(start_reg, len_regs, slave=slaveid)
+                data = result.registers if not result.isError() else None
+            elif function_code == 1:
+                result = await self.master.read_coils(start_reg, len_regs, slave=slaveid)
+                data = result.bits if not result.isError() else None
+            elif function_code == 2:
+                result = await self.master.read_discrete_inputs(start_reg, len_regs, slave=slaveid)
+                data = result.bits if not result.isError() else None
+            elif function_code == 4:
+                result = await self.master.read_input_registers(start_reg, len_regs, slave=slaveid)
+                data = result.registers if not result.isError() else None
+            if data == None:
+                raise Exception(f'Error response from Modbus read call: {result.function_code}')
+        except Exception as e:
+            self.stats.reads_error += 1
+            raise e
+        finally:
+            self.modbuslock.release()
+            self.stats.reads_total += 1
+
+        return data
+
 
     def run_workloop(self, task_group=None):
         self.runtask = task_group.create_task(self._workloop())
@@ -76,7 +158,13 @@ class ModbusMaster:
 
     def is_connected(self) -> bool:
         return self.master.connected
-
+    
+    def get_statistics(self):
+        stats = self.stats.snapshot()
+        stats_last = self.stats_last
+        self.stats_last = stats
+        return (stats, stats_last)
+    
 
 class ModbusWriter:
     
@@ -122,12 +210,12 @@ class ModbusWriter:
 
 class Device:
 
-    all_devices = dict()
-
     #==================================================================================================================
     #
     # Class methods and attributes
     #
+
+    all_devices = dict()
 
     @classmethod
     def register_device(cls, device:'Device') -> None :
@@ -153,9 +241,9 @@ class Device:
         self.slaveid = slaveid
         self.ha_properties = ha_properties
 
+        self.stats = ModbusStats()
+        self.stats_last = None
         self.last_poll_status = None
-        self.poll_count = 0
-        self.error_count = 0
         self.consec_fail_cnt = 0
 
         self.references = dict()
@@ -202,35 +290,27 @@ class Device:
 
 
     #------------------------------------------------------------------------------------------------------------------
-    # Diagnostics
-    #
-
-    async def publish_diagnostics(self) -> None :
-        error_perc = (self.error_count/self.poll_count)*100 if self.poll_count != 0 else 0
-        self.mqttc.publish_device_diagnostics( self.name, self.poll_count, error_perc, self.error_count)
-        self.poll_count = 0
-        self.error_count = 0
-
-
-    #------------------------------------------------------------------------------------------------------------------
     # Modbus related
     #
+    
+    def get_statistics(self):
+        stats = self.stats.snapshot()
+        stats_last = self.stats_last
+        self.stats_last = stats
+        return (stats, stats_last)
+
 
     def count_new_poll( self, was_successfull:bool):
-        self.poll_count += 1
-        
-        if was_successfull != self.last_poll_status :
-            self.mqttc.publish_device_availability(self.name, was_successfull)
-        self.last_poll_status = was_successfull
-
+        self.stats.reads_total += 1        
         if was_successfull:
             self.consec_fail_cnt = 0
-            self.enable()
+            if was_successfull != self.last_poll_status :
+                self.enable()
         else:
-            self.error_count += 1
+            self.stats.reads_error +=1
             self.consec_fail_cnt += 1
             if self.consec_fail_cnt == 3:
-                self.mqttc.publish_device_availability(self.name, False)
+                self.mqttc.publish_device_availability(self.name, False) # replace with self.disable() once re-enable logic is done
                 #if globs.args.autoremove:
                 #    globs.logger.info("Poller "+self.topic+" with Slave-ID "+str(self.slaveid)+" disabled (functioncode: "+str(
                 #        self.functioncode)+", start reference: "+str(self.reference)+", size: "+str(self.size)+").")
@@ -241,7 +321,7 @@ class Device:
                 #            globs.logger.info("Poller "+p.topic+" with Slave-ID "+str(p.slaveid)+" disabled (functioncode: "+str(
                 #                p.functioncode)+", start reference: "+str(p.reference)+", size: "+str(p.size)+").")
                 #self.disable()
-                pass
+        self.last_poll_status = was_successfull
 
     async def write_to_device(self, payload_str:str, full_topic:str, dev_topic, val_topic) -> None:
         the_ref:Reference = self.references[val_topic]
@@ -257,25 +337,16 @@ class Device:
         except Exception as e:
             raise Exception(f'Error converting MQTT value "{payload_str}" from "{full_topic}" for writing to Modbus: {e}')
 
+        self.stats.writes_total += 1
         fct_code_write = the_ref.poller.function_code_write
-        try:     
-            time.sleep(0.002)
-            if fct_code_write == 5:
-                if not isinstance(value,list) :
-                    result = await self.modbus_master.master.write_coil(the_ref.write_reg, value, slave=self.slaveid)
-                else:
-                    result = await self.modbus_master.master.write_coils(the_ref.write_reg, value, slave=self.slaveid)
-            elif fct_code_write == 6 :
-                if not isinstance(value,list) and deamon_opts['avoid-fc6'] :
-                    value = [ value ]
-                if not isinstance(value,list) :
-                    result = await self.modbus_master.master.write_register(the_ref.write_reg, value, slave=self.slaveid)
-                else:
-                    result = await self.modbus_master.master.write_registers(the_ref.write_reg, value, slave=self.slaveid)
+        try:
+            result = await self.modbus_master.write_to_slave(fct_code_write, the_ref.write_reg, value, self.slaveid)
         except Exception as e:
+            self.stats.writes_error += 1
             raise Exception(f'Error writing to Modbus (device:{self.name} topic:{full_topic}): {e}')
 
         if result.isError():
+            self.stats.writes_error += 1
             raise Exception(f'Error writing to Modbus (device:{self.name} topic:{full_topic}): {result}')
         
         # writing was successful => we can assume, that the corresponding state can be set and published
@@ -359,33 +430,22 @@ class Poller:
 
 
     async def poll(self) -> None :
-        result = None
         try:
-            time.sleep(0.002)
-            if self.function_code == 3:
-                result = await self.device.modbus_master.master.read_holding_registers(self.start_reg, self.len_regs, slave=self.device.slaveid)
-                data = result.registers if not result.isError() else None
-            elif self.function_code == 1:
-                result = await self.device.modbus_master.master.read_coils(self.start_reg, self.len_regs, slave=self.device.slaveid)
-                data = result.bits if not result.isError() else None
-            elif self.function_code == 2:
-                result = await self.device.modbus_master.master.read_discrete_inputs(self.start_reg, self.len_regs, slave=self.device.slaveid)
-                data = result.bits if not result.isError() else None
-            elif self.function_code == 4:
-                result = await self.device.modbus_master.master.read_input_registers(self.start_reg, self.len_regs, slave=self.device.slaveid)
-                data = result.registers if not result.isError() else None
-
-            if data is not None:
-                logger.debug(f'Read Modbus fc:{self.function_code}, ref:{self.start_reg}, len:{self.len_regs}, id:{self.device.slaveid} -> data:{data}')
-                self.device.count_new_poll( True)
-                for ref in self.refs_readable_list:
-                    raw_val = data[ref.start_reg_relative : (ref.data_converter.reg_cnt+ref.start_reg_relative)]
-                    ref.publish_value(raw_val)
-            else:
-                logger.warning(f'Error response from Modbus call ({self}): {self.function_code}')
+            data = await self.device.modbus_master.read_from_slave(self.function_code, self.start_reg, self.len_regs, self.device.slaveid)
         except Exception as e:
             self.device.count_new_poll( False)
             raise Exception( f'Error reading from Modbus ({self}): {e}')
+
+        try:
+            logger.debug(f'Read Modbus fc:{self.function_code}, ref:{self.start_reg}, len:{self.len_regs}, id:{self.device.slaveid} -> data:{data}')
+            for ref in self.refs_readable_list:
+                raw_val = data[ref.start_reg_relative : (ref.data_converter.reg_cnt+ref.start_reg_relative)]
+                ref.publish_value(raw_val)
+        except Exception as e:
+            self.device.count_new_poll( False)
+            raise Exception( f'Error publishing value from Modbus ({self}): {e}')
+
+        self.device.count_new_poll( True)
 
 
     def run_workloop(self, task_group):

@@ -33,8 +33,10 @@ from .home_assistant import HassConnector
 
 class DiagnosticsMaster:
 
-    def __init__(self, diag_rate) -> None:
+    def __init__(self, diag_rate:float, mqtt_client:MqttClient, mb_master:ModbusMaster) -> None:
         self.diag_rate = diag_rate
+        self.mqtt_client = mqtt_client
+        self.mb_master = mb_master
         self.runtask = None
 
     def run_workloop(self, task_group):
@@ -44,15 +46,49 @@ class DiagnosticsMaster:
     async def _workloop(self):
         try:
             while True:
+
+                try:
+                    await self.publish_modbus_diag(self.mb_master)
+                except Exception as e:
+                    logger.error(f'Publishing modbus diagnostics for {self.mb_master}: {e}')
+
                 for dev in Device.all_devices.values():
                     try:
-                        await dev.publish_diagnostics()
+                        await self.publish_device_diag( dev)
                     except Exception as e:
                         logger.error(f'Publishing device diagnostics for {dev}: {e}')
+
                 await asyncio.sleep(self.diag_rate)
 
         except asyncio.exceptions.CancelledError as e:
             logger.debug(f'Diagnostics task stopped ({self}).')
+
+    async def publish_modbus_diag(self, mb_master:ModbusMaster) -> None :
+        (stats, stats_old) = mb_master.get_statistics()
+        if stats_old == None:
+            return
+        diff_stats = stats.diff_stat(stats_old)
+        value_template = '{{\n  "rate": "{:.1f}",\n  "count-relative": "{}",\n  "count-since-start": "{}"\n}}'
+        self.mqtt_client.publish_modbus_diagnostics('modbus-read-total', value_template.format(diff_stats.reads_total/diff_stats.timestamp, diff_stats.reads_total, stats.reads_total))
+        self.mqtt_client.publish_modbus_diagnostics('modbus-write-total', value_template.format(diff_stats.writes_total/diff_stats.timestamp, diff_stats.writes_total, stats.writes_total))
+        self.mqtt_client.publish_modbus_diagnostics('modbus-total-total', value_template.format((diff_stats.reads_total+diff_stats.writes_total)/diff_stats.timestamp, diff_stats.reads_total+diff_stats.writes_total, stats.reads_total+stats.writes_total))
+        self.mqtt_client.publish_modbus_diagnostics('modbus-read-err', value_template.format(diff_stats.reads_error/diff_stats.timestamp, diff_stats.reads_error, stats.reads_error))
+        self.mqtt_client.publish_modbus_diagnostics('modbus-write-err', value_template.format(diff_stats.writes_error/diff_stats.timestamp, diff_stats.writes_error, stats.writes_error))
+        self.mqtt_client.publish_modbus_diagnostics('modbus-total-err', value_template.format((diff_stats.reads_error+diff_stats.writes_error)/diff_stats.timestamp, diff_stats.reads_error+diff_stats.writes_error, stats.reads_error+stats.writes_error))
+    
+    async def publish_device_diag(self, dev:Device) -> None :
+        (stats, stats_old) = dev.get_statistics()
+        if stats_old == None:
+            return
+        diff_stats = stats.diff_stat(stats_old)
+        value_template = '{{\n  "rate": "{:.1f}",\n  "count-relative": "{}",\n  "count-since-start": "{}"\n}}'
+        self.mqtt_client.publish_device_diagnostics(dev.name, 'modbus-read-total', value_template.format(diff_stats.reads_total/diff_stats.timestamp, diff_stats.reads_total, stats.reads_total))
+        self.mqtt_client.publish_device_diagnostics(dev.name, 'modbus-write-total', value_template.format(diff_stats.writes_total/diff_stats.timestamp, diff_stats.writes_total, stats.writes_total))
+        self.mqtt_client.publish_device_diagnostics(dev.name, 'modbus-total-total', value_template.format((diff_stats.reads_total+diff_stats.writes_total)/diff_stats.timestamp, diff_stats.reads_total+diff_stats.writes_total, stats.reads_total+stats.writes_total))
+        self.mqtt_client.publish_device_diagnostics(dev.name, 'modbus-read-err', value_template.format(diff_stats.reads_error/diff_stats.timestamp, diff_stats.reads_error, stats.reads_error))
+        self.mqtt_client.publish_device_diagnostics(dev.name, 'modbus-write-err', value_template.format(diff_stats.writes_error/diff_stats.timestamp, diff_stats.writes_error, stats.writes_error))
+        self.mqtt_client.publish_device_diagnostics(dev.name, 'modbus-total-err', value_template.format((diff_stats.reads_error+diff_stats.writes_error)/diff_stats.timestamp, diff_stats.reads_error+diff_stats.writes_error, stats.reads_error+stats.writes_error))
+
 
 
 def main():
@@ -95,7 +131,7 @@ def main():
     mbWorkGroup.add_argument('--avoid-fc6', type=bool, help=f'If set, use function code 16 (write multiple registers) even when just writing a single register. Default: "{deamon_opts["avoid-fc6"]}"')
 
     miscGroup = parser.add_argument_group('Misc options', '')
-    miscGroup.add_argument('--diagnostics-rate', type=int, help=f'Time in seconds after which for each device diagnostics are published via mqtt. Default: "{deamon_opts["diagnostics-rate"]}"')
+    miscGroup.add_argument('--diagnostics-rate', type=float, help=f'Time in seconds after which for each device diagnostics are published via mqtt. Default: "{deamon_opts["diagnostics-rate"]}"')
     miscGroup.add_argument('--add-to-homeassistant', type=bool, help=f'Add devices to Home Assistant using Home Assistant\'s MQTT-Discovery. Default: "{deamon_opts["add-to-homeassistant"]}"')
     miscGroup.add_argument('--verbosity', choices=['debug', 'info', 'warning', 'error', 'critical'], help=f'Verbosity level. Default: "{deamon_opts["verbosity"]}"')
 
@@ -139,10 +175,6 @@ def main():
                         retain_values=deamon_opts['retain-values'],
                         mqtt_value_qos=deamon_opts['mqtt-value-qos'])
 
-    diag_master = DiagnosticsMaster(deamon_opts['diagnostics-rate'])
-    modbus_writer = ModbusWriter(mqtt_client)
-    mqtt_client.set_modbus_writer(modbus_writer)
-
     if deamon_opts['rtu']:
         modbus_master = ModbusMaster.new_modbus_rtu_master(deamon_opts['rtu'], deamon_opts['rtu-parity'], deamon_opts['rtu-baud'], deamon_opts['set-modbus-timeout'])
     elif deamon_opts['tcp']:
@@ -150,6 +182,10 @@ def main():
     else:
         logger.critical(f'No modbus master defined')
         sys.exit(1)
+
+    diag_master = DiagnosticsMaster(deamon_opts['diagnostics-rate'], mqtt_client, modbus_master)
+    modbus_writer = ModbusWriter(mqtt_client)
+    mqtt_client.set_modbus_writer(modbus_writer)
 
     if args.config.name.endswith('.csv'):
         ConfigSpicierCsv.read_devices(args.config, mqtt_client, modbus_master)
@@ -206,5 +242,3 @@ async def async_main(mqtt_client:MqttClient, modbus_writer:ModbusWriter, modbus_
         logger.critical( f'Fatal error in main loop: {e}')
     except (asyncio.exceptions.CancelledError, KeyboardInterrupt) as e:
         pass
-
-

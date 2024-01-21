@@ -91,13 +91,14 @@ class MqttClient:
     def publish_daemon_availability(self, is_available:bool) -> None:
         self.mqc.publish(self.get_topic_daemon_avail(), self.get_avail_message(is_available), qos=1, retain=True)
 
+    def publish_modbus_diagnostics(self, topic:str, value:str) -> None:
+        self.mqc.publish(self.get_topic_modbus_diagnostics(topic), value, qos=0, retain=False)
+
     def publish_device_availability(self, device_name:str, is_available:bool) -> None:
         self.mqc.publish(self.get_topic_device_availability(device_name), self.get_avail_message(is_available), qos=1, retain=True)
 
-    def publish_device_diagnostics(self, device_name:str, poll_count:int, error_percent:int, error_count:int) -> None:
-        self.mqc.publish(self.get_topic_device_diag_pollcount(device_name), str(poll_count), qos=0, retain=False)
-        self.mqc.publish(self.get_topic_device_diag_errrate(device_name), str(error_percent), qos=0, retain=False)
-        self.mqc.publish(self.get_topic_device_diag_errtotal(device_name), str(error_count), qos=0, retain=False)
+    def publish_device_diagnostics(self, device_name:str, topic:str, value:str) -> None:
+        self.mqc.publish(self.get_topic_device_diagnostics(device_name, topic), value, qos=0, retain=False)
 
     def publish_reference_state(self, device_name:str, topic:str, value:str) -> None :
         publish_result = self.mqc.publish(f'{self.get_topic_reference_value(device_name,topic)}', value, qos=self.mqtt_value_qos, retain=self.retain_values)
@@ -128,6 +129,7 @@ class MqttClient:
 
     def _register_daemon_topics(self) -> None :
         self._register_unique_topic( self.get_topic_daemon_avail())
+        self._register_unique_topic( self.get_topic_modbus_diagnostics().rstrip('/'))
 
     def get_topic_daemon_value_base(self) -> str : 
         return f'{self.get_topic_base()}/{self.clientid}'
@@ -136,13 +138,14 @@ class MqttClient:
 
     def get_topic_daemon_avail(self) -> str : 
         return f'{self.get_topic_daemon_value_base()}/connected'
+
+    def get_topic_modbus_diagnostics(self, topic:str="") -> str:
+        return f'{self.get_topic_daemon_value_base()}/diagnostics/{topic}'
     
 
     def register_device_topics( self, device_name:str) -> None :
         self._register_unique_topic( self.get_topic_device_availability(device_name))
-        self._register_unique_topic( self.get_topic_device_diag_pollcount(device_name))
-        self._register_unique_topic( self.get_topic_device_diag_errrate(device_name))
-        self._register_unique_topic( self.get_topic_device_diag_errtotal(device_name))
+        self._register_unique_topic( self.get_topic_device_diagnostics(device_name).rstrip('/'))
 
     def get_topic_device_value_base(self, device_name:str) -> str : 
         return f'{self.get_topic_base()}/{device_name}'
@@ -151,13 +154,9 @@ class MqttClient:
 
     def get_topic_device_availability(self, device_name:str) -> str:
         return f'{self.get_topic_device_value_base(device_name)}/connected'
-    def get_topic_device_diag_pollcount(self, device_name:str) -> str:
-        return f'{self.get_topic_device_value_base(device_name)}/diagnostics/poll_count'
-    def get_topic_device_diag_errrate(self, device_name:str) -> str:
-        return f'{self.get_topic_device_value_base(device_name)}/diagnostics/errors_percent'
-    def get_topic_device_diag_errtotal(self, device_name:str) -> str:
-        return f'{self.get_topic_device_value_base(device_name)}/diagnostics/errors_total'
-
+    def get_topic_device_diagnostics(self, device_name:str, topic:str="") -> str:
+        return f'{self.get_topic_device_value_base(device_name)}/diagnostics/{topic}'
+    
 
     def register_reference_topics( self, device_name:str, ref_topic:str, is_writable:bool) -> None :
         self._register_unique_topic( self.get_topic_reference_value(device_name, ref_topic))
