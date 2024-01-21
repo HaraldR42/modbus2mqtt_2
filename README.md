@@ -141,8 +141,9 @@ For rendering the raw Modbus data, the following `data-type` values are supporte
 - `uint32BE`
 - `float32LE`
 - `float32BE`
-- `stringN` with `N` being an even number of characters
-- **Attention:** The *listUint16* data type of *spicierModbus2mqtt* is not yet supported
+- `stringLEx` with `x` being an even number of characters
+- `stringBEx` with `x` being an even number of characters
+- `list-dType-x` Generic list type: `dType` is one of the above data-types, x is the number of elements in the list. Example: `list-float32LE-5`
 
 ## References
 This work is the result of personally not being satisfied with existing solutions (and me being in the mood to get my hands dirty :-)<br>

@@ -46,32 +46,51 @@ class DataConverter:
 
     def __init__(self, type:str):
         self.type = "uint16" if type is None or type == "" else type
-        self.base_type_reg_cnt = 0
         self.list_length = 0
         self.reg_cnt = 0
         self._str2mb_fct = None
         self._mb2py_fct = None
+        self._base_data_type = None
 
         if self.type in DataConverter._reg_cnt_dict:
-            self.base_type_reg_cnt = DataConverter._reg_cnt_dict[self.type]
             self.list_length = 1
-            self.reg_cnt = self.base_type_reg_cnt*self.list_length
+            self.reg_cnt = DataConverter._reg_cnt_dict[self.type] * self.list_length
             self._str2mb_fct = DataConverter._str2mb_dict[self.type]
             self._mb2py_fct = DataConverter._mb2py_dict[self.type]
 
-        elif self.type.startswith('string'):  # string<charLength>
+        elif self.type.startswith('string'):  # string(BE|LE)<charLength>
+            rest = self.type.removeprefix('string')
+            if rest.startswith('BE'):
+                self._str2mb_fct = lambda self, val: self._str2modbus_string(val, False)
+                self._mb2py_fct = lambda self, val: self._mb2py_string(val, False)
+            elif rest.startswith('LE'):
+                self._str2mb_fct = lambda self, val: self._str2modbus_string(val, True)
+                self._mb2py_fct = lambda self, val: self._mb2py_string(val, True)
+            else:
+                raise ValueError(f'Malformed string type {self.type}')
             try:
-                char_len = int(self.type.removeprefix('string'))
+                char_len = int(rest[2:])
             except:
                 raise ValueError(f'Malformed string type {self.type}')
             if (char_len%2) != 0:
                 raise ValueError(f'String length not even in {self.type}')
-            self.base_type_reg_cnt = 0.5
             self.list_length = char_len
-            self.reg_cnt = int(self.base_type_reg_cnt*self.list_length)
-            self._str2mb_fct = lambda self, val: self._str2modbus_string(val)
-            self._mb2py_fct = lambda self, val: self._mb2py_string(val)
+            self.reg_cnt = int(self.list_length / 2)
 
+        elif self.type.startswith('list-'):  # list-<dataType>-<length>
+            parts = self.type.split('-')
+            if len(parts) != 3:
+                raise ValueError(f'Malformed list data-type {self.type}')
+            if parts[1] not in DataConverter._reg_cnt_dict:
+                raise ValueError(f'Unknown base data-type {parts[1]} list data-type {self.type}')
+            try:
+                self.list_length = int(parts[2])
+            except:
+                raise ValueError(f'Malformed list data-type {self.type}')
+            self._base_data_type = DataConverter(parts[1])
+            self.reg_cnt = self._base_data_type.reg_cnt * self.list_length
+            self._str2mb_fct = lambda self, val: self._str2modbus_list(val)
+            self._mb2py_fct = lambda self, val: self._mb2py_list(val)
         else:
             raise ValueError(f'Unknown data type "{self.type}".')
 
@@ -93,73 +112,47 @@ class DataConverter:
         return bool(value)
 
 
-    def _str2modbus_string(self, payload:str):
+    def _str2modbus_string(self, payload:str, is_LE:bool):
         out=[]
-        if payload.length > self.list_length:
+        if len(payload) > self.list_length:
             raise ValueError( f'String "{payload}" too long for {self.reg_cnt} modbus registers')
         for a in range(self.reg_cnt):
-            b0 = (ord(payload[2*a])&0xff)<<8 if len(payload)>2*a else 0x00
-            b1 = (ord(payload[2*a+1])&0xff) if len(payload)>2*a+1 else 0x00
-            out.append( b0&b1)
+            if is_LE:
+                b0 = (ord(payload[2*a])&0xff) if len(payload)>2*a else 0x00
+                b1 = (ord(payload[2*a+1])&0xff)<<8 if len(payload)>2*a+1 else 0x00
+            else:
+                b0 = (ord(payload[2*a])&0xff)<<8 if len(payload)>2*a else 0x00
+                b1 = (ord(payload[2*a+1])&0xff) if len(payload)>2*a+1 else 0x00
+            out.append(b0|b1)
         return out
 
-    def _mb2py_string(self, val):
+    def _mb2py_string(self, val, is_LE:bool):
         out=''
         for x in val:
-            if x&0x00FF != 0:
-                out += chr(x&0x00FF)
-            if x>>8 != 0:
-                out += chr(x>>8)
+            if is_LE:
+                if x&0x00FF != 0:
+                    out += chr(x&0x00FF)
+                if x>>8 != 0:
+                    out += chr(x>>8)
+            else:
+                if x>>8 != 0:
+                    out += chr(x>>8)
+                if x&0x00FF != 0:
+                    out += chr(x&0x00FF)
         return out
 
 
+    def _str2modbus_list(self, payload:str):
+        all_parts = payload.strip().split(' ')
+        if len(all_parts) != self.list_length:
+            raise ValueError(f'Cannot interpret "{payload}" as {self.type}.')
+        out = []
+        for part in all_parts:
+            out.append(self._base_data_type.str2mb(part))
+        return out
 
-
-###################################################################################################################
-
-        #elif type.startswith('list-'):  # list-<baseType>-<length>
-        #    try:
-        #        base_type, list_length = itemgetter(1,2)(type.split(sep='-'))
-        #        list_length = int(list_length)
-        #    except:
-        #        raise ValueError("Malformed type '"+type+"'.")
-        #    if base_type not in DataTypeConversion.reg_cnt_dict:
-        #        raise ValueError("Base type '"+base_type+"' of type '"+type+"' unknown.")
-        #    base_type_reg_cnt = DataTypeConversion.reg_cnt_dict[base_type]
-        #    reg_cnt = base_type_reg_cnt*list_length
-        #    str2mb_fct = None
-        #    mb2py_fct = None
-
-#class DataTypes_OLD:
-#
-#    def parseListUint16(refobj,msg):
-#        out=[]
-#        try:
-#            msg=msg.rstrip()
-#            msg=msg.lstrip()
-#            msg=msg.split(" ")
-#            if len(msg) != refobj.regAmount:
-#                return None
-#            for x in range(0, len(msg)):
-#                out.append(int(msg[x]))
-#        except:
-#            return None
-#        return out
-#    def combineListUint16(refobj,val):
-#        out=""
-#        for x in val:
-#            out+=str(x)+" "
-#        return out
-#
-#    def parseDataType(refobj,conf):
-#        elif conf.startswith("list-uint16-"):
-#            try:
-#                length = int(conf[12:15])
-#            except:
-#                length = 1
-#            if length > 50:
-#                print("Data type list-uint16: length too long")
-#                length = 50
-#            refobj.parse=DataTypes.parseListUint16
-#            refobj.combine=DataTypes.combineListUint16
-#            refobj.regAmount=length
+    def _mb2py_list(self, val):
+        out = ''
+        for part in val:
+            out += str(self._base_data_type.mb2py(part)) + ' '
+        return out.strip()
