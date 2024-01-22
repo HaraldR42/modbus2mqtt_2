@@ -4,7 +4,7 @@
 
 import unittest
 import struct 
-from ..data_types import DataConverter
+from .data_types import DataConverter
 
 
 class TestDataTypeConversion(unittest.TestCase):

@@ -243,7 +243,7 @@ class Device:
 
         self.stats = ModbusStats()
         self.stats_last = None
-        self.last_poll_status = None
+        self.last_poll_success = None
         self.consec_fail_cnt = 0
 
         self.references = dict()
@@ -304,7 +304,7 @@ class Device:
         self.stats.reads_total += 1        
         if was_successfull:
             self.consec_fail_cnt = 0
-            if was_successfull != self.last_poll_status :
+            if was_successfull != self.last_poll_success :
                 self.enable()
         else:
             self.stats.reads_error +=1
@@ -321,7 +321,7 @@ class Device:
                 #            globs.logger.info("Poller "+p.topic+" with Slave-ID "+str(p.slaveid)+" disabled (functioncode: "+str(
                 #                p.functioncode)+", start reference: "+str(p.reference)+", size: "+str(p.size)+").")
                 #self.disable()
-        self.last_poll_status = was_successfull
+        self.last_poll_success = was_successfull
 
     async def write_to_device(self, payload_str:str, full_topic:str, dev_topic, val_topic) -> None:
         the_ref:Reference = self.references[val_topic]

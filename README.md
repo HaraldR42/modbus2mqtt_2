@@ -33,9 +33,10 @@ Main improvements and changes over *spicierModbus2mqtt*:
     - Default option setting possible to reduce config file size
 - Optional printf like MQTT output formatting for references (only via yaml)
 - Optionally, references can have different modbus registers for writing than reading. Especially for supporting Wago devices.
-- "Publish always" extended to cyclic forced publishing (or always)
 - Modbus values published without retain flag. This changes the default behavior from *spicierModbus2mqtt*, but can be switched on by option.
-- Cyclic publishing all values (even unchanged ones) in a configurable interval possible (not necessarily on every modbus read)
+- Cyclic publishing all values (even unchanged ones, "Publish always") now possible in a configurable interval (not necessarily on every modbus read)
+- Extended diagnostics
+- Extended data types: All data types work for read and write, list data taype for all basic data types
 
 ## Installation
 Requirements:
