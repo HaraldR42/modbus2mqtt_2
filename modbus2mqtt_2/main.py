@@ -40,28 +40,29 @@ class DiagnosticsMaster:
         self.runtask = None
 
     def run_workloop(self, task_group):
-        if self.diag_rate > 0:
-            self.runtask = task_group.create_task(self._workloop())
+        #...........................................................................................
+        async def workloop():
+            try:
+                while True:
 
-    async def _workloop(self):
-        try:
-            while True:
-
-                try:
-                    await self.publish_modbus_diag(self.mb_master)
-                except Exception as e:
-                    logger.error(f'Publishing modbus diagnostics for {self.mb_master}: {e}')
-
-                for dev in Device.all_devices.values():
                     try:
-                        await self.publish_device_diag( dev)
+                        await self.publish_modbus_diag(self.mb_master)
                     except Exception as e:
-                        logger.error(f'Publishing device diagnostics for {dev}: {e}')
+                        logger.error(f'Publishing modbus diagnostics for {self.mb_master}: {e}')
 
-                await asyncio.sleep(self.diag_rate)
+                    for dev in Device.all_devices.values():
+                        try:
+                            await self.publish_device_diag( dev)
+                        except Exception as e:
+                            logger.error(f'Publishing device diagnostics for {dev}: {e}')
 
-        except asyncio.exceptions.CancelledError as e:
-            logger.debug(f'Diagnostics task stopped ({self}).')
+                    await asyncio.sleep(self.diag_rate)
+
+            except asyncio.exceptions.CancelledError as e:
+                logger.debug(f'Diagnostics task stopped ({self}).')
+        #...........................................................................................
+        if self.diag_rate > 0:
+            self.runtask = task_group.create_task(workloop())
 
     async def publish_modbus_diag(self, mb_master:ModbusMaster) -> None :
         (stats, stats_old) = mb_master.get_statistics()

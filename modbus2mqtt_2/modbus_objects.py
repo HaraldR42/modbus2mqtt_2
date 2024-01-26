@@ -132,26 +132,30 @@ class ModbusMaster:
 
 
     def run_workloop(self, task_group=None):
-        self.runtask = task_group.create_task(self._workloop())
-
-    async def _workloop(self) -> None:
-        try:
-            while True:
-                if self.master.connected:
-                    await asyncio.sleep(2)
-                    continue
-                logger.info(f'Connecting to Modbus')
-                await self.master.connect()
-                if self.master.connected:
-                    for dev in self.devices:
-                        dev.enable()
-                    logger.info(f'Modbus connected successfully')
-                else:
-                    for dev in self.devices:
-                        dev.disable()
-                    logger.info(f'Modbus NOT connected')
-        except asyncio.exceptions.CancelledError as e:
-            logger.debug(f'Modbus master task stopped ({self}).')
+        #...........................................................................................
+        async def workloop() -> None:
+            try:
+                while True:
+                    if self.master.connected:
+                        #logger.info(f'Modbus STILL connected')
+                        await asyncio.sleep(2)
+                        continue
+                    logger.info(f'Connecting to Modbus')
+                    await self.master.connect()
+                    if self.master.connected:
+                        for dev in self.devices:
+                            dev.enable()
+                        logger.info(f'Modbus connected successfully')
+                    else:
+                        for dev in self.devices:
+                            dev.disable()
+                        self.stats.reads_error += 1
+                        self.stats.reads_total += 1
+                        logger.info(f'Modbus NOT connected')
+            except asyncio.exceptions.CancelledError as e:
+                logger.debug(f'Modbus master task stopped ({self}).')
+        #...........................................................................................
+        self.runtask = task_group.create_task(workloop())
 
     def register_device(self, device:'Device') -> None:
         self.devices.append(device)
@@ -179,33 +183,34 @@ class ModbusWriter:
         self.set_request_queue.put_nowait((req_userdata, req_msg))
 
     def run_workloop(self, task_group):
-        self.runtask = task_group.create_task(self._workloop())
-
-    async def _workloop(self):
-        try:
-            while True:
-                (req_userdata, req_msg) = await self.set_request_queue.get()
-                try:
-                    short_topic = str(req_msg.topic).removeprefix(self.mqtt_client.get_topic_base()+'/')
-                    topic_parts = short_topic.split('/')
-                    device_name = topic_parts[0]
-                    value_topic = topic_parts[-1]
-                    if device_name == self.mqtt_client.clientid:
-                        # Here go any device level subscriptions
-                        pass
-                    else:
-                        the_dev:Device = Device.all_devices[device_name]
-                        if the_dev is None:
-                            logger.warning( f'Tried writing to unknown device {device_name} by MQTT topic {req_msg.topic}.')
+        #...........................................................................................
+        async def workloop():
+            try:
+                while True:
+                    (req_userdata, req_msg) = await self.set_request_queue.get()
+                    try:
+                        short_topic = str(req_msg.topic).removeprefix(self.mqtt_client.get_topic_base()+'/')
+                        topic_parts = short_topic.split('/')
+                        device_name = topic_parts[0]
+                        value_topic = topic_parts[-1]
+                        if device_name == self.mqtt_client.clientid:
+                            # Here go any device level subscriptions
+                            pass
                         else:
-                            payload = str(req_msg.payload.decode("utf-8"))
-                            await the_dev.write_to_device( payload, req_msg.topic, device_name, value_topic)
-                except Exception as e:
-                    logger.error(f'Error handling MQTT set request: {e}')
+                            the_dev:Device = Device.all_devices[device_name]
+                            if the_dev is None:
+                                logger.warning( f'Tried writing to unknown device {device_name} by MQTT topic {req_msg.topic}.')
+                            else:
+                                payload = str(req_msg.payload.decode("utf-8"))
+                                await the_dev.write_to_device( payload, req_msg.topic, device_name, value_topic)
+                    except Exception as e:
+                        logger.error(f'Error handling MQTT set request: {e}')
 
-                self.set_request_queue.task_done()
-        except asyncio.exceptions.CancelledError as e:
-            logger.debug(f'Modbus writer task stopped ({self}).')
+                    self.set_request_queue.task_done()
+            except asyncio.exceptions.CancelledError as e:
+                logger.debug(f'Modbus writer task stopped ({self}).')
+        #...........................................................................................
+        self.runtask = task_group.create_task(workloop())
 
 
 class Device:
@@ -262,18 +267,32 @@ class Device:
     #
 
     def disable(self) -> None :
-        if self.enabled: # do not use the method is_enabled() here. Just look at our own status!
+        if self.enabled: # do not use the method is_ready_to_comm() here. Just look at our own status!
             self.mqttc.publish_device_availability(self.name, False)
         self.enabled = False
 
     def enable(self) -> None :
-        if not self.enabled: # do not use the method is_enabled() here. Just look at our own status!
+        if not self.enabled: # do not use the method is_ready_to_comm() here. Just look at our own status!
             self.mqttc.publish_device_availability(self.name, True)
         self.enabled = True
 
-    def is_enabled(self) -> bool:
+    def is_ready_to_comm(self) -> bool:
         return (self.modbus_master.is_connected() and self.enabled)
+    
 
+    def schedule_reenable(self, task_group):
+        #...........................................................................................
+        async def workloop(sleeptime) -> None :
+            try:
+                logger.info(f'Scheduled reenabling {self} in {sleeptime}s')
+                await asyncio.sleep(sleeptime)
+                self.enable()
+            except asyncio.exceptions.CancelledError as e:
+                logger.debug(f'Reenabler task stopped ({self}).')
+        #...........................................................................................
+        sleeptime = 120 # XXX Make this configurable
+        self.reenable_task = task_group.create_task(workloop(sleeptime))
+    
 
     #------------------------------------------------------------------------------------------------------------------
     # Registering
@@ -300,7 +319,7 @@ class Device:
         return (stats, stats_last)
 
 
-    def count_new_poll( self, was_successfull:bool):
+    def count_new_poll( self, was_successfull:bool, task_group):
         self.stats.reads_total += 1        
         if was_successfull:
             self.consec_fail_cnt = 0
@@ -310,18 +329,11 @@ class Device:
             self.stats.reads_error +=1
             self.consec_fail_cnt += 1
             if self.consec_fail_cnt == 3:
-                self.mqttc.publish_device_availability(self.name, False) # replace with self.disable() once re-enable logic is done
-                #if globs.args.autoremove:
-                #    globs.logger.info("Poller "+self.topic+" with Slave-ID "+str(self.slaveid)+" disabled (functioncode: "+str(
-                #        self.functioncode)+", start reference: "+str(self.reference)+", size: "+str(self.size)+").")
-                #    for p in pollers:  # also fail all pollers with the same slave id
-                #        if p.slaveid == self.slaveid:
-                #            p.failcounter = 3
-                #            p.disabled = True
-                #            globs.logger.info("Poller "+p.topic+" with Slave-ID "+str(p.slaveid)+" disabled (functioncode: "+str(
-                #                p.functioncode)+", start reference: "+str(p.reference)+", size: "+str(p.size)+").")
-                #self.disable()
+                self.disable()
+                self.schedule_reenable(task_group)
+                logger.info(f'Disable device {self} after {self.consec_fail_cnt} consequtive failures.')
         self.last_poll_success = was_successfull
+
 
     async def write_to_device(self, payload_str:str, full_topic:str, dev_topic, val_topic) -> None:
         the_ref:Reference = self.references[val_topic]
@@ -425,15 +437,15 @@ class Poller:
         logger.debug(f'Added poller {self}')
 
 
-    def is_enabled(self) -> bool:
-        return self.device.is_enabled()
+    def is_ready_to_comm(self) -> bool:
+        return self.device.is_ready_to_comm()
 
 
-    async def poll(self) -> None :
+    async def poll(self, task_group) -> None :
         try:
             data = await self.device.modbus_master.read_from_slave(self.function_code, self.start_reg, self.len_regs, self.device.slaveid)
         except Exception as e:
-            self.device.count_new_poll( False)
+            self.device.count_new_poll( False, task_group)
             raise Exception( f'Error reading from Modbus ({self}): {e}')
 
         try:
@@ -442,33 +454,33 @@ class Poller:
                 raw_val = data[ref.start_reg_relative : (ref.data_converter.reg_cnt+ref.start_reg_relative)]
                 ref.publish_value(raw_val)
         except Exception as e:
-            self.device.count_new_poll( False)
+            self.device.count_new_poll( False, task_group)
             raise Exception( f'Error publishing value from Modbus ({self}): {e}')
 
-        self.device.count_new_poll( True)
+        self.device.count_new_poll( True, task_group)
 
 
     def run_workloop(self, task_group):
-        self.runtask = task_group.create_task(self._workloop())
-
-
-    async def _workloop(self) -> None :
-        while not self.is_enabled(): # Wait with our initial delay to be enabled
-            await asyncio.sleep(0.5)
-        await asyncio.sleep(self.poll_rate*random.uniform(0, 1)) # Delay start for a random time to distribute bus usage a bit
-        try:
-            while True:
-                if not self.is_enabled(): # If we're disabled, just wait a bit and give it another try
+        #...........................................................................................
+        async def workloop() -> None :
+            try:
+                while not self.is_ready_to_comm(): # Wait with our initial delay to be ready for communication
                     await asyncio.sleep(0.5)
-                    continue
-                logger.debug(f'Polling... ({self}).')
-                try:
-                    await self.poll()
-                except Exception as e:
-                    logger.error(f'Error polling ({self}): {e}')
-                await asyncio.sleep(self.poll_rate)
-        except asyncio.exceptions.CancelledError as e:
-            logger.debug(f'Poller task stopped ({self}).')
+                await asyncio.sleep(self.poll_rate*random.uniform(0, 1)) # Delay start for a random time to distribute bus usage a bit
+                while True:
+                    if not self.is_ready_to_comm(): # If we're unable to communicate, just wait a bit and give it another try
+                        await asyncio.sleep(0.5)
+                        continue
+                    logger.debug(f'Polling... ({self}).')
+                    try:
+                        await self.poll(task_group)
+                    except Exception as e:
+                        logger.error(f'Error polling ({self}): {e}')
+                    await asyncio.sleep(self.poll_rate)
+            except asyncio.exceptions.CancelledError as e:
+                logger.debug(f'Poller task stopped ({self}).')
+        #...........................................................................................
+        self.runtask = task_group.create_task(workloop())
 
 
     def register_reference(self, new_ref:'Reference') -> None :
