@@ -109,22 +109,22 @@ Devices:
         len-regs: 16
         References:
           - topic: firmware-info
-            data-type: string32
+            data-type: stringLE32
       - start-reg: 0x2021
         len-regs: 8
         References:
           - topic: firmware-rev-time
-            data-type: string16
+            data-type: stringLE16
       - start-reg: 0x2022
         len-regs: 8
         References:
           - topic: firmware-rev-date
-            data-type: string16
+            data-type: stringLE16
       - start-reg: 0x2023
         len-regs: 32
         References:
           - topic: firmware-loaderinfo
-            data-type: string64
+            data-type: stringLE64
 
       # Constant registers, useful for testing
       - start-reg: 0x2000 
