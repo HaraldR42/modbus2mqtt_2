@@ -1,3 +1,6 @@
+# Local stuff
+_local
+
 # Editors
 .vscode/
 .idea/
