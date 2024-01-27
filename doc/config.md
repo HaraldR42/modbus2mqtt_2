@@ -255,7 +255,7 @@ See also the [example config file for Eastron power meter](/config/eastron-sdm72
     'json_attributes_template':     None, # |     |       | Defines a template to extract the JSON dictionary from messages received on the json_attributes_topic. Usage example can be found in MQTT sensor documentation.
     'json_attributes_topic':        None, # |     |       | The MQTT topic subscribed to receive a JSON dictionary payload and then set as sensor attributes. Usage example can be found in MQTT sensor documentation.
     'name':                         None, # |     |   X   | The name of the entity. Can be set to null if only the device name is relevant.
-    'object_id':                    None, # |     |       | Used instead of name for automatic generation of entity_id
+    'object_id':                    None, # |     |   X   | Used instead of name for automatic generation of entity_id
     'qos':                          None, # |     |       | The maximum QoS level to be used when receiving and publishing messages.
     'unique_id':                    None, # |     |   X   | An ID that uniquely identifies this sensor. If two sensors have the same unique ID, Home Assistant will raise an exception.
 
