@@ -4,7 +4,7 @@ import jsons
 
 from .mqtt_client import MqttClient
 from .modbus_objects import Device, Reference
-from .globals import logger, __myname__
+from .globals import logger, __myname_short__
 
 
 ###################################################################################################################
@@ -48,7 +48,13 @@ class HassDevice :
 
     # remember to mark values not for serialization to json as private
     _config_options = {         
-        # --- User settable options ---------------------------------------------------------------
+        # --- User settable options by modbus2mqtt ------------------------------------------------
+        #                                       |     | Auto  | 
+        #                                       | Req | deflt | Description
+        #                                       +-----+-------+------------------------------------
+        '_ui_short_name':       None, #         |     |       | Short name of the device. Used in building the HASS name. If present, name = "deviceName (_ui_short_name)"
+
+        # --- User settable options by HASS -------------------------------------------------------
         #                                       |     | Auto  | 
         #                                       | Req | deflt | Description
         #                                       +-----+-------+------------------------------------
@@ -74,10 +80,14 @@ class HassDevice :
         return HassDevice._config_options
 
     def __init__(self, dev:Device) -> None:
+        for attr, value in dev.ha_properties.items():
+            if attr.startswith('_') and value != None:
+                setattr( self, attr, value)
         # remember to mark values not for serialization to json as private
-        self.name:str = dev.name # The name of the device.
+        
+        self.name:str = dev.name if self._ui_short_name == None else f'{dev.name} ({self._ui_short_name})'  # The name of the device.
         self.identifiers:list = list() # A list of IDs that uniquely identify the device. For example a serial number.
-        self.identifiers.append(HassEntity._ha_id_from_str(f'{__myname__}-{dev.name}'))
+        self.identifiers.append(HassEntity._ha_id_from_str(f'{__myname_short__}-{dev.name}'))
         for attr, value in dev.ha_properties.items():
             if value != None:
                 setattr( self, attr, value)
@@ -194,7 +204,7 @@ class HassEntity :
         self.device:HassDevice = ha_dev
 
         self.name = ref.topic[:1].upper() + ref.topic[1:]
-        self.unique_id:str = HassEntity._ha_id_from_str(f'{__myname__}-{ref.poller.device.name}-{ref.topic}')
+        self.unique_id:str = HassEntity._ha_id_from_str(f'{__myname_short__}-{ref.poller.device.name}-{ref.topic}')
         self.object_id:str = HassEntity._ha_id_from_str(f'{ref.poller.device.name}-{ref.topic}')
         if (ref.is_readable) :
             self.state_topic:str = ref.mqttc.get_topic_reference_value(ref.poller.device.name, ref.topic) # The MQTT topic subscribed to receive sensor’s state.

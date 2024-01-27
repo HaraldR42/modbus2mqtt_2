@@ -3,6 +3,7 @@ import socket
 
 __version__ = "0.3.0"
 __myname__ = "modbus2mqtt_2"
+__myname_short__ = "m2m"
 __min_version__ = (3,11)
 
 logging.basicConfig()
