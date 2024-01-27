@@ -195,7 +195,7 @@ class HassEntity :
 
         self.name = ref.topic[:1].upper() + ref.topic[1:]
         self.unique_id:str = HassEntity._ha_id_from_str(f'{__myname__}-{ref.poller.device.name}-{ref.topic}')
-        self.object_id:str = HassEntity._ha_id_from_str(f'{__myname__}-{ref.poller.device.name}-{ref.topic}')
+        self.object_id:str = HassEntity._ha_id_from_str(f'{ref.poller.device.name}-{ref.topic}')
         if (ref.is_readable) :
             self.state_topic:str = ref.mqttc.get_topic_reference_value(ref.poller.device.name, ref.topic) # The MQTT topic subscribed to receive sensor’s state.
 
