@@ -11,6 +11,7 @@ Daemon:
 Devices:
 
   - name: powermeter0
+    _ui_short_name: "Power House"
     slave-id: 1
     manufacturer: Eastron
     model: SDM72D-M-2-MID 
@@ -103,10 +104,12 @@ Devices:
             format-str: "%.3f"
             unit_of_measurement: kWh
             device_class: energy
+            state_class: total_increasing
           - topic: energyOut
             start-reg: 74
             format-str: "%.3f"
             unit_of_measurement: kWh
             device_class: energy
+            state_class: total_increasing
             
 

@@ -220,6 +220,12 @@ For more extensive information on the options, please see the HASS documentation
 See also the [example config file for Eastron power meter](/config/eastron-sdm72.yaml). There you can see how one could use the additional HASS options.
 
 ### HASS Device Options
+    # --- User settable options by modbus2mqtt ------------------------------------------------
+    #                                       |     | Auto  | 
+    #                                       | Req | deflt | Description
+    #                                       +-----+-------+------------------------------------
+    '_ui_short_name':       None, #         |     |       | Short name of the device. Used in building the HASS name. If present, name = "deviceName (_ui_short_name)"
+
     # --- User settable options ---------------------------------------------------------------
     #                                       |     | Auto  | 
     #                                       | Req | deflt | Description
