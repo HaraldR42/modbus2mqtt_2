@@ -80,7 +80,7 @@ class HassDevice :
         return HassDevice._config_options
 
     def __init__(self, dev:Device) -> None:
-        for attr, value in dev.ha_properties.items():
+        for attr, value in dev.ha_properties.items():  # apply any private values from the config
             if attr.startswith('_') and value != None:
                 setattr( self, attr, value)
         # remember to mark values not for serialization to json as private
@@ -88,8 +88,8 @@ class HassDevice :
         self.name:str = dev.name if self._ui_short_name == None else f'{dev.name} ({self._ui_short_name})'  # The name of the device.
         self.identifiers:list = list() # A list of IDs that uniquely identify the device. For example a serial number.
         self.identifiers.append(HassEntity._ha_id_from_str(f'{__myname_short__}-{dev.name}'))
-        for attr, value in dev.ha_properties.items():
-            if value != None:
+        for attr, value in dev.ha_properties.items():  # apply any explicitly set values which are not private (also results in overriding automatically calculated ones)
+            if not attr.startswith('_') and value != None:
                 setattr( self, attr, value)
 
 
@@ -193,6 +193,10 @@ class HassEntity :
     #
 
     def __init__(self, ref:Reference, ha_dev:HassDevice) -> None:
+        for attr, value in ref.ha_properties.items():  # apply any private values from the config
+            if attr.startswith('_') and value != None:
+                setattr( self, attr, value)
+
         # remember to mark values not for serialization to json as private
         self._ref=ref
         self._entity_type = ref.hass_entity_type
@@ -203,14 +207,16 @@ class HassEntity :
         self.availability_mode = 'all'
         self.device:HassDevice = ha_dev
 
-        self.name = ref.topic[:1].upper() + ref.topic[1:]
+        capital_name = ref.topic[:1].upper() + ref.topic[1:]
+        self.name = capital_name if ha_dev._ui_short_name == None else f'{capital_name} ({ha_dev._ui_short_name})'
+
         self.unique_id:str = HassEntity._ha_id_from_str(f'{__myname_short__}-{ref.poller.device.name}-{ref.topic}')
         self.object_id:str = HassEntity._ha_id_from_str(f'{ref.poller.device.name}-{ref.topic}')
         if (ref.is_readable) :
             self.state_topic:str = ref.mqttc.get_topic_reference_value(ref.poller.device.name, ref.topic) # The MQTT topic subscribed to receive sensor’s state.
 
-        for attr, value in ref.ha_properties.items(): # apply any explicitly set values
-            if value != None:
+        for attr, value in ref.ha_properties.items(): # apply any explicitly set values which are not private (also results in overriding automatically calculated ones)
+            if not attr.startswith('_') and value != None:
                 setattr( self, attr, value)
 
     def get_autodiscovery_rel_topic(self) -> str:
