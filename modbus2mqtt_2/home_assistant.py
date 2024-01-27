@@ -208,7 +208,7 @@ class HassEntity :
         self.device:HassDevice = ha_dev
 
         capital_name = ref.topic[:1].upper() + ref.topic[1:]
-        self.name = capital_name if ha_dev._ui_short_name == None else f'{capital_name} ({ha_dev._ui_short_name})'
+        self.name = f'{capital_name} ({ha_dev.name})' if ha_dev._ui_short_name == None else f'{capital_name} ({ha_dev._ui_short_name})'
 
         self.unique_id:str = HassEntity._ha_id_from_str(f'{__myname_short__}-{ref.poller.device.name}-{ref.topic}')
         self.object_id:str = HassEntity._ha_id_from_str(f'{ref.poller.device.name}-{ref.topic}')
