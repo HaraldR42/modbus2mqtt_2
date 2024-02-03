@@ -175,7 +175,7 @@ class HassEntity :
     def get_all_config_opts(cls) -> dict:
         all = dict()
         for type_class in HassEntity._all_entity_types.values():
-            all = all | type_class._config_options
+            all = all | type_class._get_config_opts_recursive()
         return all
     
     @classmethod
