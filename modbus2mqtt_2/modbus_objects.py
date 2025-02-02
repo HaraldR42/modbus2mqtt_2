@@ -58,7 +58,7 @@ class ModbusMaster:
 
     @classmethod
     def new_modbus_tcp_master(cls, tcp_host:str, tcp_port:int) -> 'ModbusMaster' :
-        master = AsyncModbusTcpClient(tcp_host, port=tcp_port, client_id="modbus2mqtt", clean_session=False)
+        master = AsyncModbusTcpClient(tcp_host, port=tcp_port)
         return cls(master)
 
 
