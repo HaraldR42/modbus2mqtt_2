@@ -286,13 +286,13 @@ class _HassSensor(HassEntity):
 class _HassActiveEntityBase(HassEntity):
 
     # remember to mark values not for serialization to json as private
-    _entity_type = "switch"
     _config_options = {
         # --- User settable options ---------------------------------------------------------------
         #                                       |     | Auto  | 
         #                                       | Req | deflt | Description
         #                                       +-----+-------+------------------------------------
-        'optimistic':           None, #         |     |       |  Flag that defines if switch works in optimistic mode. Default: true if no state_topic defined, else false.
+        'command_template':     None, #         |     |       | (optional) Defines a template to generate the payload to send to command_topic. The switch command template accepts the parameters value. 
+        'optimistic':           None, #         |     |       | Flag that defines if switch works in optimistic mode. Default: true if no state_topic defined, else false.
         'retain':               None, #         |     |       | (optional, default: false) If the published message should have the retain flag on or not.
 
         # --- NOT settable options ----------------------------------------------------------------
