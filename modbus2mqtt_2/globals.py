@@ -1,7 +1,7 @@
 import logging
 import socket
 
-__version__ = "0.3.2"
+__version__ = "0.4.0"
 __myname__ = "modbus2mqtt_2"
 __myname_short__ = "m2m"
 __min_version__ = (3,11)
