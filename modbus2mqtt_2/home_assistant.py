@@ -391,6 +391,38 @@ class _HassNumber(_HassActiveEntityBase):
         super().__init__(ref, ha_dev)
 
 
+@staticinit
+class _HassValve(_HassActiveEntityBase):
+
+    # remember to mark values not for serialization to json as private
+    _entity_type = "valve"
+    _config_options = {
+        # --- User settable options ---------------------------------------------------------------
+        #                                       |     | Auto  | 
+        #                                       | Req | deflt | Description
+        #                                       +-----+-------+------------------------------------
+        'device_class':         None, #         |     |       | The type/class of the number. The device_class can be null.
+        'payload_close':        None, #         |     |       | (optional, default: CLOSE) The command payload that closes the valve. Is only used when reports_position is set to false (default). The payload_close is not allowed if reports_position is set to true. Can be set to null to disable the valve’s close option.
+        'payload_open':         None, #         |     |       | (optional, default: OPEN) The command payload that opens the valve. Is only used when reports_position is set to false (default). The payload_open is not allowed if reports_position is set to true. Can be set to null to disable the valve’s open option.
+        'payload_stop':         None, #         |     |       | (optional) The command payload that stops the valve. When not configured, the valve will not support the valve.stop action.
+        'position_closed':      None, #         |     |       | (optional, default: 0) Number which represents closed position. The valve’s position will be scaled to the(position_closed…position_open) range when an action is performed and scaled back when a value is received.
+        'position_open':        None, #         |     |       | (optional, default: 100) Number which represents open position. The valve’s position will be scaled to (position_closed…position_open) range when an is performed and scaled back when a value is received.
+        'reports_position':     None, #         |     |       | (optional, default: false) Set to true if the value reports the position or supports setting the position. Enabling the reports_position option will cause the position to be published instead of a payload defined by payload_open, payload_close or payload_stop. When receiving messages, state_topic will accept numeric payloads or one of the following state messages: open, opening, closed, or closing.
+        'state_closed':         None, #         |     |       | (optional, default: closed) The payload that represents the closed state. Is only allowed when reports_position is set to False (default).
+        'state_closing':        None, #         |     |       | (optional, default: closing) The payload that represents the closing state.
+        'state_open':           None, #         |     |       | (optional, default: open) The payload that represents the open state. Is only allowed when reports_position is set to False (default).
+        'state_opening':        None, #         |     |       | (optional, default: opening) The payload that represents the opening state.
+    }
+
+    @classmethod
+    def __staticinit__(cls):
+        cls._register_entity_type()
+
+    def __init__(self, ref:Reference, ha_dev:HassDevice) -> None:
+        # remember to mark values not for serialization to json as private
+        super().__init__(ref, ha_dev)
+
+
 class _HassAvailability:
         # --- NOT settable options ----------------------------------------------------------------
         #                                       |     | Auto  | 
