@@ -49,7 +49,7 @@ Requirements:
 ### Installation of requirements:
 1. Install python3 and python3-pip and python3-serial<br>
   On a Debian based system, something like `sudo apt install python3 python3-pip python3-serial` will likely get you there.
-1. run `pip3 install pymodbus`
+1. run `pip3 install pymodbus==3.6.4`
 1. run `pip3 install paho-mqtt`
 1. run `pip3 install pyyaml`
 1. run `pip3 install jsons`

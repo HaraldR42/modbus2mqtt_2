@@ -58,7 +58,7 @@ class ModbusMaster:
 
     @classmethod
     def new_modbus_tcp_master(cls, tcp_host:str, tcp_port:int) -> 'ModbusMaster' :
-        master = AsyncModbusTcpClient(tcp_host, port=tcp_port, client_id="modbus2mqtt", clean_session=False)
+        master = AsyncModbusTcpClient(tcp_host, port=tcp_port)
         return cls(master)
 
 
@@ -93,7 +93,7 @@ class ModbusMaster:
                     result = await self.master.write_register(write_reg, value, slave=slaveid)
                 else:
                     result = await self.master.write_registers(write_reg, value, slave=slaveid)
-            if result.isError() :
+            if result!=None and result.isError() :
                 raise Exception(f'Error response from Modbus write call: {result.function_code}')
         except Exception as e:
             self.stats.writes_error += 1
@@ -357,7 +357,7 @@ class Device:
             self.stats.writes_error += 1
             raise Exception(f'Error writing to Modbus (device:{self.name} topic:{full_topic}): {e}')
 
-        if result.isError():
+        if result!=None and result.isError():
             self.stats.writes_error += 1
             raise Exception(f'Error writing to Modbus (device:{self.name} topic:{full_topic}): {result}')
         

@@ -103,12 +103,10 @@ class HassEntity :
         #                                       |     | Auto  | 
         #                                       | Req | deflt | Description
         #                                       +-----+-------+------------------------------------
-        'device_class':                 None, # |     |       | Sets the class of the device, changing the device state and icon that is displayed on the frontend. The device_class can be null.
         'enabled_by_default':           None, # |     |       | Flag which defines if the entity should be enabled when first added.
         'encoding':                     None, # |     |       | The encoding of the payloads received. Set to "" to disable decoding of incoming payload.
         'entity_category':              None, # |     |       | The category of the entity. When set, the entity category must be diagnostic for sensors.
-        'expire_after':                 None, # |     |       | If set, it defines the number of seconds after the sensor’s state expires, if it’s not updated. After expiry, the sensor’s state becomes unavailable. Default the sensors state never expires.
-        'force_update':                 None, # |     |       | Sends update events (which results in update of state object’s last_changed) even if the sensor’s state hasn’t changed. Useful if you want to have meaningful value graphs in history or want to create an automation that triggers on every incoming state message (not only when the sensor’s new state is different to the current one).
+        'entity_picture':               None, # |     |       | Picture URL for the entity.
         'icon':                         None, # |     |       | Icon for the entity.
         'json_attributes_template':     None, # |     |       | Defines a template to extract the JSON dictionary from messages received on the json_attributes_topic. Usage example can be found in MQTT sensor documentation.
         'json_attributes_topic':        None, # |     |       | The MQTT topic subscribed to receive a JSON dictionary payload and then set as sensor attributes. Usage example can be found in MQTT sensor documentation.
@@ -116,6 +114,7 @@ class HassEntity :
         'object_id':                    None, # |     |   X   | Used instead of name for automatic generation of entity_id
         'qos':                          None, # |     |       | The maximum QoS level to be used when receiving and publishing messages.
         'unique_id':                    None, # |     |   X   | An ID that uniquely identifies this sensor. If two sensors have the same unique ID, Home Assistant will raise an exception.
+        'value_template':               None, # |     |       | Defines a template to extract device’s state from the state_topic. 
 
         # --- NOT settable options ----------------------------------------------------------------
         #                                       |     | Auto  | 
@@ -175,7 +174,7 @@ class HassEntity :
     def get_all_config_opts(cls) -> dict:
         all = dict()
         for type_class in HassEntity._all_entity_types.values():
-            all = all | type_class._config_options
+            all = all | type_class._get_config_opts_recursive()
         return all
     
     @classmethod
@@ -246,11 +245,13 @@ class _HassBinarySensor(HassEntity):
         #                                       |     | Auto  | 
         #                                       | Req | deflt | Description
         #                                       +-----+-------+------------------------------------
+        'device_class':                 None, # |     |       | Sets the class of the device, changing the device state and icon that is displayed on the frontend. The device_class can be null.
+        'expire_after':                 None, # |     |       | If set, it defines the number of seconds after the sensor’s state expires, if it’s not updated. After expiry, the sensor’s state becomes unavailable. Default the sensors state never expires.
+        'force_update':                 None, # |     |       | Sends update events (which results in update of state object’s last_changed) even if the sensor’s state hasn’t changed. Useful if you want to have meaningful value graphs in history or want to create an automation that triggers on every incoming state message (not only when the sensor’s new state is different to the current one).
         'last_reset_value_template':    None, # |     |       | Defines a template to extract the last_reset.
         'off_delay':                    None, # |     |       | For sensors that only send on state updates (like PIRs), this variable sets a delay in seconds after which the sensor’s state will be updated back to off.
         'payload_off':                  None, # |     |       | The string that represents the off state. It will be compared to the message in the state_topic (see value_template for details)
         'payload_on':                   None, # |     |       | The string that represents the on state. It will be compared to the message in the state_topic (see value_template for details)
-        'value_template':               None, # |     |       | Defines a template that returns a string to be compared to payload_on/payload_off or an empty string, in which case the MQTT message will be removed. Remove this option when payload_on and payload_off are sufficient to match your payloads (i.e no pre-processing of original message is required).
     }
 
     @classmethod
@@ -268,10 +269,12 @@ class _HassSensor(HassEntity):
         #                                       |     | Auto  | 
         #                                       | Req | deflt | Description
         #                                       +-----+-------+------------------------------------
+        'device_class':                 None, # |     |       | Sets the class of the device, changing the device state and icon that is displayed on the frontend. The device_class can be null.
+        'expire_after':                 None, # |     |       | If set, it defines the number of seconds after the sensor’s state expires, if it’s not updated. After expiry, the sensor’s state becomes unavailable. Default the sensors state never expires.
+        'force_update':                 None, # |     |       | Sends update events (which results in update of state object’s last_changed) even if the sensor’s state hasn’t changed. Useful if you want to have meaningful value graphs in history or want to create an automation that triggers on every incoming state message (not only when the sensor’s new state is different to the current one).
         'suggested_display_precision':  None, # |     |       | The number of decimals which should be used in the sensor’s state after rounding.
         'state_class':                  None, # |     |       | The state_class of the sensor. (not supported by all entity types!)
         'unit_of_measurement':          None, # |     |       | Defines the units of measurement of the sensor, if any. The unit_of_measurement can be null.
-        'value_template':               None, # |     |       | Defines a template to extract the value. If the template throws an error, the current state will be used instead.
     }
 
     @classmethod
@@ -280,22 +283,17 @@ class _HassSensor(HassEntity):
 
 
 @staticinit
-class _HassSwitch(HassEntity):
+class _HassActiveEntityBase(HassEntity):
 
     # remember to mark values not for serialization to json as private
-    _entity_type = "switch"
     _config_options = {
         # --- User settable options ---------------------------------------------------------------
         #                                       |     | Auto  | 
         #                                       | Req | deflt | Description
         #                                       +-----+-------+------------------------------------
-        'optimistic':           None, #         |     |       |  Flag that defines if switch works in optimistic mode. Default: true if no state_topic defined, else false.
-        'payload_off':          None, #         |     |       | (optional, default: OFF) The payload that represents off state. If specified, will be used for both comparing to the value in the state_topic (see value_template and state_off for details) and sending as off command to the command_topic.
-        'payload_on':           None, #         |     |       | (optional, default: ON) The payload that represents on state. If specified, will be used for both comparing to the value in the state_topic (see value_template and state_on for details) and sending as on command to the command_topic.
+        'command_template':     None, #         |     |       | (optional) Defines a template to generate the payload to send to command_topic. The switch command template accepts the parameters value. 
+        'optimistic':           None, #         |     |       | Flag that defines if switch works in optimistic mode. Default: true if no state_topic defined, else false.
         'retain':               None, #         |     |       | (optional, default: false) If the published message should have the retain flag on or not.
-        'state_off':            None, #         |     |       | (optional) The payload that represents the off state. Used when value that represents off state in the state_topic is different from value that should be sent to the command_topic to turn the device off. Default: payload_off if defined, else OFF
-        'state_on':             None, #         |     |       | (optional) The payload that represents the on state. Used when value that represents on state in the state_topic is different from value that should be sent to the command_topic to turn the device on. Default: payload_on if defined, else ON
-        'value_template':       None, #         |     |       | (optional) Defines a template to extract device’s state from the state_topic. To determine the switches’s state result of this template will be compared to state_on and state_off.
 
         # --- NOT settable options ----------------------------------------------------------------
         #                                       |     | Auto  | 
@@ -314,6 +312,115 @@ class _HassSwitch(HassEntity):
         if not ref.is_writeable :
             raise ValueError(f'Reference "{ref.poller.device.name}/{ref.topic}" must be writeable to act as a switch')
         self.command_topic:str = ref.mqttc.get_topic_reference_subsciption(ref.poller.device.name, ref.topic)
+
+
+@staticinit
+class _HassSwitch(_HassActiveEntityBase):
+
+    # remember to mark values not for serialization to json as private
+    _entity_type = "switch"
+    _config_options = {
+        # --- User settable options ---------------------------------------------------------------
+        #                                       |     | Auto  | 
+        #                                       | Req | deflt | Description
+        #                                       +-----+-------+------------------------------------
+        'device_class':         None, #         |     |       | Sets the class of the device, changing the device state and icon that is displayed on the frontend. The device_class can be null.
+        'options':              None, #         |     |       | (optional) List of allowed sensor state value. An empty list is not allowed. The sensor’s device_class must be set to enum. The options option cannot be used together with state_class or unit_of_measurement.
+        'payload_off':          None, #         |     |       | (optional, default: OFF) The payload that represents off state. If specified, will be used for both comparing to the value in the state_topic (see value_template and state_off for details) and sending as off command to the command_topic.
+        'payload_on':           None, #         |     |       | (optional, default: ON) The payload that represents on state. If specified, will be used for both comparing to the value in the state_topic (see value_template and state_on for details) and sending as on command to the command_topic.
+        'state_off':            None, #         |     |       | (optional) The payload that represents the off state. Used when value that represents off state in the state_topic is different from value that should be sent to the command_topic to turn the device off. Default: payload_off if defined, else OFF
+        'state_on':             None, #         |     |       | (optional) The payload that represents the on state. Used when value that represents on state in the state_topic is different from value that should be sent to the command_topic to turn the device on. Default: payload_on if defined, else ON
+    }
+
+    @classmethod
+    def __staticinit__(cls):
+        cls._register_entity_type()
+
+    def __init__(self, ref:Reference, ha_dev:HassDevice) -> None:
+        # remember to mark values not for serialization to json as private
+        super().__init__(ref, ha_dev)
+
+
+@staticinit
+class _HassSelect(_HassActiveEntityBase):
+
+    # remember to mark values not for serialization to json as private
+    _entity_type = "select"
+    _config_options = {
+        # --- User settable options ---------------------------------------------------------------
+        #                                       |     | Auto  | 
+        #                                       | Req | deflt | Description
+        #                                       +-----+-------+------------------------------------
+        'options':              None, #         |  X  |       | List of options that can be selected. An empty list or a list with a single item is allowed.
+    }
+
+    @classmethod
+    def __staticinit__(cls):
+        cls._register_entity_type()
+
+    def __init__(self, ref:Reference, ha_dev:HassDevice) -> None:
+        # remember to mark values not for serialization to json as private
+        super().__init__(ref, ha_dev)
+
+
+@staticinit
+class _HassNumber(_HassActiveEntityBase):
+
+    # remember to mark values not for serialization to json as private
+    _entity_type = "number"
+    _config_options = {
+        # --- User settable options ---------------------------------------------------------------
+        #                                       |     | Auto  | 
+        #                                       | Req | deflt | Description
+        #                                       +-----+-------+------------------------------------
+        'device_class':         None, #         |     |       | The type/class of the number. The device_class can be null.
+        'max':                  None, #         |     |       | (optional, default: 100) Maximum value.
+        'min':                  None, #         |     |       | (optional, default: 1) Minimum value.
+        'mode':                 None, #         |     |       | (optional, default: “auto”) Control how the number should be displayed in the UI. Can be set to box or slider to force a display mode.
+        'payload_reset':        None, #         |     |       | (optional, default: “None”) A special payload that resets the state to unknown when received on the state_topic.
+        'step':                 None, #         |     |       | (optional, default: 1) Step value. Smallest value 0.001.
+        'unit_of_measurement':  None, #         |     |       | (optional) Defines the unit of measurement of the sensor, if any. The unit_of_measurement can be null.
+    }
+
+    @classmethod
+    def __staticinit__(cls):
+        cls._register_entity_type()
+
+    def __init__(self, ref:Reference, ha_dev:HassDevice) -> None:
+        # remember to mark values not for serialization to json as private
+        super().__init__(ref, ha_dev)
+
+
+@staticinit
+class _HassValve(_HassActiveEntityBase):
+
+    # remember to mark values not for serialization to json as private
+    _entity_type = "valve"
+    _config_options = {
+        # --- User settable options ---------------------------------------------------------------
+        #                                       |     | Auto  | 
+        #                                       | Req | deflt | Description
+        #                                       +-----+-------+------------------------------------
+        'device_class':         None, #         |     |       | The type/class of the number. The device_class can be null.
+        'payload_close':        None, #         |     |       | (optional, default: CLOSE) The command payload that closes the valve. Is only used when reports_position is set to false (default). The payload_close is not allowed if reports_position is set to true. Can be set to null to disable the valve’s close option.
+        'payload_open':         None, #         |     |       | (optional, default: OPEN) The command payload that opens the valve. Is only used when reports_position is set to false (default). The payload_open is not allowed if reports_position is set to true. Can be set to null to disable the valve’s open option.
+        'payload_stop':         None, #         |     |       | (optional) The command payload that stops the valve. When not configured, the valve will not support the valve.stop action.
+        'position_closed':      None, #         |     |       | (optional, default: 0) Number which represents closed position. The valve’s position will be scaled to the(position_closed…position_open) range when an action is performed and scaled back when a value is received.
+        'position_open':        None, #         |     |       | (optional, default: 100) Number which represents open position. The valve’s position will be scaled to (position_closed…position_open) range when an is performed and scaled back when a value is received.
+        'reports_position':     None, #         |     |       | (optional, default: false) Set to true if the value reports the position or supports setting the position. Enabling the reports_position option will cause the position to be published instead of a payload defined by payload_open, payload_close or payload_stop. When receiving messages, state_topic will accept numeric payloads or one of the following state messages: open, opening, closed, or closing.
+        'state_closed':         None, #         |     |       | (optional, default: closed) The payload that represents the closed state. Is only allowed when reports_position is set to False (default).
+        'state_closing':        None, #         |     |       | (optional, default: closing) The payload that represents the closing state.
+        'state_open':           None, #         |     |       | (optional, default: open) The payload that represents the open state. Is only allowed when reports_position is set to False (default).
+        'state_opening':        None, #         |     |       | (optional, default: opening) The payload that represents the opening state.
+    }
+
+    @classmethod
+    def __staticinit__(cls):
+        cls._register_entity_type()
+
+    def __init__(self, ref:Reference, ha_dev:HassDevice) -> None:
+        # remember to mark values not for serialization to json as private
+        super().__init__(ref, ha_dev)
 
 
 class _HassAvailability:
