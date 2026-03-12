@@ -111,7 +111,7 @@ class HassEntity :
         'json_attributes_template':     None, # |     |       | Defines a template to extract the JSON dictionary from messages received on the json_attributes_topic. Usage example can be found in MQTT sensor documentation.
         'json_attributes_topic':        None, # |     |       | The MQTT topic subscribed to receive a JSON dictionary payload and then set as sensor attributes. Usage example can be found in MQTT sensor documentation.
         'name':                         None, # |     |   X   | The name of the entity. Can be set to null if only the device name is relevant.
-        'object_id':                    None, # |     |   X   | Used instead of name for automatic generation of entity_id
+        'default_entity_id':            None, # |     |   X   | Used instead of name for automatic generation of entity_id
         'qos':                          None, # |     |       | The maximum QoS level to be used when receiving and publishing messages.
         'unique_id':                    None, # |     |   X   | An ID that uniquely identifies this sensor. If two sensors have the same unique ID, Home Assistant will raise an exception.
         'value_template':               None, # |     |       | Defines a template to extract device’s state from the state_topic. 
@@ -210,7 +210,7 @@ class HassEntity :
         self.name = f'{capital_name} ({ha_dev.name})' if ha_dev._ui_short_name == None else f'{capital_name} ({ha_dev._ui_short_name})'
 
         self.unique_id:str = HassEntity._ha_id_from_str(f'{__myname_short__}-{ref.poller.device.name}-{ref.topic}')
-        self.object_id:str = HassEntity._ha_id_from_str(f'{ref.poller.device.name}-{ref.topic}')
+        self.default_entity_id:str = HassEntity._ha_id_from_str(f'{ref.poller.device.name}-{ref.topic}')
         if (ref.is_readable) :
             self.state_topic:str = ref.mqttc.get_topic_reference_value(ref.poller.device.name, ref.topic) # The MQTT topic subscribed to receive sensor’s state.
 
