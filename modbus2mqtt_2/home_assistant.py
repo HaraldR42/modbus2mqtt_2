@@ -76,7 +76,7 @@ class HassDevice :
     }
 
     @classmethod
-    def get_config_options(cls) -> dict() :
+    def get_config_options(cls) -> dict :
         return HassDevice._config_options
 
     def __init__(self, dev:Device) -> None:
@@ -274,7 +274,8 @@ class _HassSensor(HassEntity):
         'force_update':                 None, # |     |       | Sends update events (which results in update of state object’s last_changed) even if the sensor’s state hasn’t changed. Useful if you want to have meaningful value graphs in history or want to create an automation that triggers on every incoming state message (not only when the sensor’s new state is different to the current one).
         'suggested_display_precision':  None, # |     |       | The number of decimals which should be used in the sensor’s state after rounding.
         'state_class':                  None, # |     |       | The state_class of the sensor. (not supported by all entity types!)
-        'unit_of_measurement':          None, # |     |       | Defines the units of measurement of the sensor, if any. The unit_of_measurement can be null.
+        'unit_of_measurement':          None, # |     |       | Defines the units of measurement of the sensor, if any. The unit_of_measurement can be null.   
+        'options':                      None, # |     |       | List of allowed sensor state value. An empty list is not allowed. The sensor’s device_class must be set to enum. The options option cannot be used together with state_class or unit_of_measurement.
     }
 
     @classmethod

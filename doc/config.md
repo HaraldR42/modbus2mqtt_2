@@ -298,6 +298,8 @@ See also the [example config file for Eastron power meter](/config/eastron-sdm72
     'state_class':                  None, # |     |       | The state_class of the sensor. (not supported by all entity types!)
     'unit_of_measurement':          None, # |     |       | Defines the units of measurement of the sensor, if any. The unit_of_measurement can be null.
     'value_template':               None, # |     |       | Defines a template to extract the value. If the template throws an error, the current state will be used instead.
+    'options':                      None, # |     |       | List of allowed sensor state value. An empty list is not allowed. The sensor’s device_class must be set to enum. The options option cannot be used together with state_class or unit_of_measurement.
+
 
 ### HASS Specific Entity Options for Switches
     # --- User settable options ---------------------------------------------------------------
