@@ -210,7 +210,7 @@ class HassEntity :
         self.name = f'{capital_name} ({ha_dev.name})' if ha_dev._ui_short_name == None else f'{capital_name} ({ha_dev._ui_short_name})'
 
         self.unique_id:str = HassEntity._ha_id_from_str(f'{__myname_short__}-{ref.poller.device.name}-{ref.topic}')
-        self.default_entity_id:str = HassEntity._ha_id_from_str(f'{ref.poller.device.name}-{ref.topic}')
+        self.default_entity_id:str = f'{self._entity_type}.' + HassEntity._ha_id_from_str(f'{ref.poller.device.name}-{ref.topic}')
         if (ref.is_readable) :
             self.state_topic:str = ref.mqttc.get_topic_reference_value(ref.poller.device.name, ref.topic) # The MQTT topic subscribed to receive sensor’s state.
 
