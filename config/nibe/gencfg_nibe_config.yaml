@@ -1,0 +1,14 @@
+Daemon:
+  mqtt-host: mqtt.server.at.some.addr
+  mqtt-topic: test/modbus
+  tcp: some.modbus.tcp.addr
+  add-to-homeassistant: true
+  hass-discovery-prefix: homeassistant/discovery
+
+Device:
+  name: heatpump0
+  _ui_short_name: "Main Heat Pump"
+  slave-id: 1
+  manufacturer: Nibe
+  model: VVM-S320+S2125-12
+  Default-poll-rate: 60
