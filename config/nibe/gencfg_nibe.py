@@ -137,7 +137,7 @@ class CustomYamlDataclass:
         for f in fields( obj):
             value = getattr(obj, f.name)
             key = f.metadata['yaml_key'] if 'yaml_key' in f.metadata else f.name
-            if not value or not key:
+            if value==None or key==None:
                 continue
             kv_data[key] = value
         return dumper.represent_mapping( yaml.resolver.BaseResolver.DEFAULT_MAPPING_TAG, kv_data)
