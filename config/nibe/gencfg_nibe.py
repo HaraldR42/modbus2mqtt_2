@@ -151,7 +151,6 @@ class DataPointEntry(CustomYamlDataclass):
     start_reg: int = field(default=None, metadata={'yaml_key': 'start-reg'})
     topic: str = field(default=None)
     data_type: str = field(default=None, metadata={'yaml_key': 'data-type'})
-    reg_type: str = field(default=None)
     scaling: float = field(default=None)
     format_str: str = field(default=None, metadata={'yaml_key': 'format-str'})
     hass_entity_type: str = field(default=None)
@@ -165,6 +164,7 @@ class DataPointEntry(CustomYamlDataclass):
     suggested_display_precision: int = field(default=None)
 
     len_reg: int = field(default=None, metadata={'yaml_key': None}) # do not export to yaml, only used for grouping registers into pollers
+    reg_type: str = field(default=None, metadata={'yaml_key': None}) # do not export to yaml, only used for grouping registers into pollers
 
     def __post_init__(self, register: NibeModbusRegister):
         super().__post_init__()
