@@ -3,7 +3,7 @@
 
 Daemon:
   mqtt-host: mqtt.server.at.some.addr
-  tcp: some.modbis.scp.addr
+  tcp: some.modbus.tcp.addr
 
   add-to-homeassistant: true
   hass-discovery-prefix: homeassistant/discovery
