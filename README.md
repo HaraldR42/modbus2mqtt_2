@@ -2,7 +2,7 @@
 Yet another Modbus master which publishes via MQTT (and vice versa).<br>
 As there are many others, its name is pronounced *modbus2mqtt* **too** ;-)
 
-Written and (c) 2024 by Harald Roelle</br>
+Written and (c) 2024,2025,2026 by Harald Roelle</br>
 Provided under the terms of the GPL 3.0 license.
 
 Contains ideas/code/architecture taken from:
@@ -37,6 +37,9 @@ Main improvements and changes over *spicierModbus2mqtt*:
 - Cyclic publishing all values (even unchanged ones, "Publish always") now possible in a configurable interval (not necessarily on every modbus read)
 - Extended diagnostics
 - Extended data types: All data types work for read and write, list data taype for all basic data types
+
+### Bonus
+A conversion rool for Nibe Modbus CSV is provided (see [config/nibe](config/nibe))
 
 ## Installation
 Requirements:
@@ -85,6 +88,7 @@ To run the image:
   - Digital output model **750-530**
   - Digital input model **750-430**
 - **Waveshare** **8-ch Ethernet Relay Module, Modbus TCP**
+- Heat pump **Nibe** **VVM S320** with **S2125**
 
 > All testing has been done only via Modbus TCP. Please provide **any** experience with other devices via the Github Issue Tracker, especially when connected with Modbus RTU!
 

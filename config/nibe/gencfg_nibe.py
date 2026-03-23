@@ -1,8 +1,9 @@
 import csv
 import os
 from dataclasses import InitVar, dataclass, field, fields
+from pathlib import Path
 import re
-from typing import Dict
+from typing import Dict, List
 from enum import Enum
 import math
 import yaml
@@ -321,12 +322,29 @@ def create_yaml_config(daemon_config: dict, device_config: dict, poller_list: li
 
 
 if __name__ == '__main__':
-    config_path = os.path.join(os.path.dirname(__file__), 'config.yaml')
+    def find_file(name:str) -> str|None:
+        dirs = [
+            ".",
+            os.path.dirname(__file__),
+        ]
+        for d in dirs:
+            path = Path(d) / name
+            if path.is_file():
+                return path
+        return None
+
+    config_path = find_file('gencfg_nibe_config.yaml')
+    if not config_path:
+        print('Error: gencfg_nibe_config.yaml not found')
+        exit(1)
     with open(config_path, "r", encoding="utf-8") as file:
         yaml_config = yaml.safe_load(file)
 
     # Read the CSV file
-    csv_path = os.path.join(os.path.dirname(__file__), 'modbus-combined.csv')
+    csv_path = find_file('nibe_modbus-configured.csv')
+    if not csv_path:
+        print('Error: nibe_modbus-configured.csv not found')
+        exit(1)
     nibe_registers = NibeModbusRegister.read_nibe_csv(csv_path)
 
     # Create poller entries based on the registers
