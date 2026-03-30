@@ -271,14 +271,18 @@ class DataPointEntry(CustomYamlDataclass):
                 self.device_class = 'power'
                 self.unit_of_measurement = 'W'
             case '':
-                data_conv_dict = None
-                if register.data_conv:
+                if not register.data_conv:
+                    pass # default: do nothing
+                elif register.data_conv == '#discrete':
+                    pass
+                elif register.data_conv == '#0off*on':
+                    pass
+                elif register.data_conv.strip().startswith('{'): # enum handling
                     data_conv_dict = yaml.safe_load(register.data_conv)
                     if not isinstance(data_conv_dict, dict):
                         raise ValueError(f'Data point "{register.key}": Data-Conv field is not a yaml dict')
-                    elif not data_conv_dict.get('*', None):
+                    if not data_conv_dict.get('*', None):
                         data_conv_dict['*'] = Defaults.ENUM_UNKNOWN_VALUE
-                if data_conv_dict:
                     self.state_class = None
                     self.suggested_display_precision = None
                     self.device_class = 'enum'
@@ -289,7 +293,7 @@ class DataPointEntry(CustomYamlDataclass):
                     self.value_template += '{{ kvlist[value] | default(kvlist["*"]) }}'
                     self.options = list(data_conv_dict.values())
                 else:
-                    pass
+                    raise ValueError(f'Data point "{register.key}": Unknown data conversion')
             case _:
                 raise ValueError(f'Data point "{register.key}": Unknown data unit: {register.einheit}')
 
