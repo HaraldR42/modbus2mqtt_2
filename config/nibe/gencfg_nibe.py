@@ -273,27 +273,33 @@ class DataPointEntry(CustomYamlDataclass):
             case '':
                 if not register.data_conv:
                     pass # default: do nothing
-                elif register.data_conv == '#discrete':
-                    pass
-                elif register.data_conv == '#0off*on':
-                    pass
-                elif register.data_conv.strip().startswith('{'): # enum handling
-                    data_conv_dict = yaml.safe_load(register.data_conv)
-                    if not isinstance(data_conv_dict, dict):
-                        raise ValueError(f'Data point "{register.key}": Data-Conv field is not a yaml dict')
-                    if not data_conv_dict.get('*', None):
-                        data_conv_dict['*'] = Defaults.ENUM_UNKNOWN_VALUE
-                    self.state_class = None
-                    self.suggested_display_precision = None
-                    self.device_class = 'enum'
-                    self.value_template = '{% set kvlist = { '
-                    for k, v in data_conv_dict.items():
-                        self.value_template += f'"{k}": "{v}", '
-                    self.value_template += ' } %}'
-                    self.value_template += '{{ kvlist[value] | default(kvlist["*"]) }}'
-                    self.options = list(data_conv_dict.values())
                 else:
-                    raise ValueError(f'Data point "{register.key}": Unknown data conversion')
+                    data_conv_dict = None
+                    if register.data_conv == '#discrete':
+                        self.state_class = None
+                        self.suggested_display_precision = None
+                    elif register.data_conv == '#0off*on':
+                        data_conv_dict = {'0': 'off', '*': 'on'}
+                    elif register.data_conv.strip().startswith('{'): # enum handling
+                        data_conv_dict = yaml.safe_load(register.data_conv)
+                        if not isinstance(data_conv_dict, dict):
+                            raise ValueError(f'Data point "{register.key}": Data-Conv field is not a yaml dict')
+                        if not data_conv_dict.get('*', None):
+                            data_conv_dict['*'] = Defaults.ENUM_UNKNOWN_VALUE
+                    else:
+                        raise ValueError(f'Data point "{register.key}": Unknown data conversion')
+
+                    if data_conv_dict:
+                        self.state_class = None
+                        self.suggested_display_precision = None
+                        self.device_class = 'enum'
+                        self.value_template = '{% set kvlist = { '
+                        for k, v in data_conv_dict.items():
+                            self.value_template += f'"{k}": "{v}", '
+                        self.value_template += ' } %}'
+                        self.value_template += '{{ kvlist[value] | default(kvlist["*"]) }}'
+                        self.options = list(data_conv_dict.values())
+
             case _:
                 raise ValueError(f'Data point "{register.key}": Unknown data unit: {register.einheit}')
 
