@@ -64,8 +64,7 @@ class NibeModbusRegister:
         
         # Ensure file exists
         if not os.path.exists(csv_file):
-            print(f'Error: File {csv_file} not found')
-            return registers
+            raise FileNotFoundError(f'File {csv_file} not found')
         
         with open(csv_file, 'r', encoding='utf-8') as file:
             cleaned = (re.sub(r'[\xad\ufeff]', '', line) for line in file)
@@ -200,7 +199,7 @@ class DataPointEntry(CustomYamlDataclass):
                 self.data_type = 'int32BE'
                 self.len_reg = 2
             case _:
-                raise ValueError(f'Unknown variablengrosse: {register.variablengrosse}')
+                raise ValueError(f'Data point "{register.key}": Unknown data_type {register.variablengrosse}')
 
         match register.registertyp:
             case RegisterType.INPUT_REGISTER:
@@ -208,7 +207,7 @@ class DataPointEntry(CustomYamlDataclass):
             case RegisterType.HOLDING_REGISTER:
                 self.reg_type = 'holding_register'
             case _:
-                raise ValueError(f'Unknown registertyp: {register.registertyp}')
+                raise ValueError(f'Data point "{register.key}": Unknown register type: {register.registertyp}')
 
         self.suggested_display_precision = 0
         if register.divisionsfaktor.isnumeric() and int(register.divisionsfaktor) != 1:
@@ -276,7 +275,7 @@ class DataPointEntry(CustomYamlDataclass):
                 if register.data_conv:
                     data_conv_dict = yaml.safe_load(register.data_conv)
                     if not isinstance(data_conv_dict, dict):
-                        print(f'Warning: Enum field is not a dict for key {register.key}')
+                        raise ValueError(f'Data point "{register.key}": Enum field is not a yaml dict')
                     elif not data_conv_dict.get('*', None):
                         data_conv_dict['*'] = Defaults.ENUM_UNKNOWN_VALUE
                 if data_conv_dict:
@@ -292,7 +291,7 @@ class DataPointEntry(CustomYamlDataclass):
                 else:
                     pass
             case _:
-                raise ValueError(f'Unknown data point type: {register.einheit}')
+                raise ValueError(f'Data point "{register.key}": Unknown data unit: {register.einheit}')
 
         self.poll_rate = register.intervall
 
@@ -334,16 +333,14 @@ if __name__ == '__main__':
 
     config_path = find_file('gencfg_nibe_config.yaml')
     if not config_path:
-        print('Error: gencfg_nibe_config.yaml not found')
-        exit(1)
+        raise FileNotFoundError('"gencfg_nibe_config.yaml" not found')
     with open(config_path, "r", encoding="utf-8") as file:
         yaml_config = yaml.safe_load(file)
 
     # Read the CSV file
     csv_path = find_file('nibe_modbus-configured.csv')
     if not csv_path:
-        print('Error: nibe_modbus-configured.csv not found')
-        exit(1)
+        raise FileNotFoundError('"nibe_modbus-configured.csv" not found')
     nibe_registers = NibeModbusRegister.read_enhanced_nibe_csv(csv_path)
 
     # Create poller entries based on the registers
