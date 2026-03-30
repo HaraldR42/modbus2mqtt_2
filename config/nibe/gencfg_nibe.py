@@ -89,7 +89,7 @@ class NibeModbusRegister:
                 return None
 
         def csv_get_bool(field: str) -> bool:
-            return True if csv_dict.get(field, '').lower().strip() in ['true', '1', 'yes', 'x'] else False
+            return True if csv_dict.get(field, '').lower().strip() in ['true', '1', 'yes', 'x', 'used'] else False
 
         self.key = csv_dict.get('Key', '')
         self.nibe_default = csv_get_bool('NIBE-Default')
