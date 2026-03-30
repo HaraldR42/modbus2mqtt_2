@@ -42,7 +42,7 @@ class NibeModbusRegister:
     disabled: bool = field(default=None)
     device: str = field(default=None)
     subdevice: str = field(default=None)
-    enum: Dict[str, str] = field(default=None)
+    data_conv: str = field(default=None)
     comment: str = field(default=None)
     relevant: bool = field(default=None)
 
@@ -99,15 +99,7 @@ class NibeModbusRegister:
         self.device = csv_dict.get('Device', '')
         self.subdevice = csv_dict.get('Subdevice', '')
 
-        enum_yaml = csv_dict.get('Enum', None)
-        if enum_yaml:
-            self.enum = yaml.safe_load(enum_yaml)
-            if not isinstance(self.enum, dict):
-                print(f'Warning: Enum field is not a dict for key {csv_dict.get("Key", "")}')
-                self.enum = None
-            if not self.enum.get('*', None):
-                self.enum['*'] = Defaults.ENUM_UNKNOWN_VALUE
-
+        self.data_conv = csv_dict.get('Enum', None)
         self.comment = csv_dict.get('Comment', '')
         self.relevant = csv_get_bool('Relevant')
 
@@ -280,16 +272,23 @@ class DataPointEntry(CustomYamlDataclass):
                 self.device_class = 'power'
                 self.unit_of_measurement = 'W'
             case '':
-                if register.enum:
+                data_conv_dict = None
+                if register.data_conv:
+                    data_conv_dict = yaml.safe_load(register.data_conv)
+                    if not isinstance(data_conv_dict, dict):
+                        print(f'Warning: Enum field is not a dict for key {register.key}')
+                    elif not data_conv_dict.get('*', None):
+                        data_conv_dict['*'] = Defaults.ENUM_UNKNOWN_VALUE
+                if data_conv_dict:
                     self.state_class = None
                     self.suggested_display_precision = None
                     self.device_class = 'enum'
                     self.value_template = '{% set kvlist = { '
-                    for k, v in register.enum.items():
+                    for k, v in data_conv_dict.items():
                         self.value_template += f'"{k}": "{v}", '
                     self.value_template += ' } %}'
                     self.value_template += '{{ kvlist[value] | default(kvlist["*"]) }}'
-                    self.options = list(register.enum.values())
+                    self.options = list(data_conv_dict.values())
                 else:
                     pass
             case _:
