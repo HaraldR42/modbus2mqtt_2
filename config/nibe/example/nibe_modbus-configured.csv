@@ -1,18 +1,18 @@
-﻿Key;NIBE Default;Intervall;Disabled;Device;Subdevice;Enum;Writeable;Comment;Relevant;Titel;Re­gister­typ;Re­gister;Divi­sions­faktor;Ein­heit;Vari­ablen­größe;Mindest­wert;Höchst­wert;Stan­dard­wert
+﻿Key;NIBE Default;Intervall;Disabled;Device;Subdevice;Data-Conv;Writeable;Comment;Relevant;Titel;Re­gister­typ;Re­gister;Divi­sions­faktor;Ein­heit;Vari­ablen­größe;Mindest­wert;Höchst­wert;Stan­dard­wert
 i00000;;;;;;;;;no;Relay status;MODBUS_INPUT_REGISTER;0;1;;u8;0;0;0
-i00001;X;;;VVM;AUSSEN;;;;yes;Aktuelle Außenlufttemperatur (BT1);MODBUS_INPUT_REGISTER;1;10;°C;s16;0;0;0
+i00001;X;;;VVM;AUSSEN;;;;used;Aktuelle Außenlufttemperatur (BT1);MODBUS_INPUT_REGISTER;1;10;°C;s16;0;0;0
 i00002;;;;;;;;;no;Vorlauf (EP23-BT2);MODBUS_INPUT_REGISTER;2;10;°C;s16;0;0;0
 i00003;;;;;;;;;no;Vorlauf (EP22-BT2);MODBUS_INPUT_REGISTER;3;10;°C;s16;0;0;0
-i00004;;;;VVM;HZ_FBH;;;;yes;Vorlauf (EP21-BT2);MODBUS_INPUT_REGISTER;4;10;°C;s16;0;0;0
-i00005;X;;;VVM;HZ_HK;;;;yes;Vorlauf (BT2);MODBUS_INPUT_REGISTER;5;10;°C;s16;0;0;0
-i00007;X;;;VVM;HZ;;;;yes;Rücklauf (BT3);MODBUS_INPUT_REGISTER;7;10;°C;s16;0;0;0
-i00008;X;;;VVM;BW;;;;yes;Brauchwasser, oben (BT7);MODBUS_INPUT_REGISTER;8;10;°C;s16;0;0;0
-i00009;X;;;VVM;BW;;;;yes;Brauchwasserbereitung (BT6);MODBUS_INPUT_REGISTER;9;10;°C;s16;0;0;0
+i00004;;;;VVM;HZ_FBH;;;;used;Vorlauf (EP21-BT2);MODBUS_INPUT_REGISTER;4;10;°C;s16;0;0;0
+i00005;X;;;VVM;HZ_HK;;;;used;Vorlauf (BT2);MODBUS_INPUT_REGISTER;5;10;°C;s16;0;0;0
+i00007;X;;;VVM;HZ;;;;used;Rücklauf (BT3);MODBUS_INPUT_REGISTER;7;10;°C;s16;0;0;0
+i00008;X;;;VVM;BW;;;;used;Brauchwasser, oben (BT7);MODBUS_INPUT_REGISTER;8;10;°C;s16;0;0;0
+i00009;X;;;VVM;BW;;;;used;Brauchwasserbereitung (BT6);MODBUS_INPUT_REGISTER;9;10;°C;s16;0;0;0
 i00036;;;;;;;;;no;Sicherheitstemperaturbegrenzer (EB100-FD1);MODBUS_INPUT_REGISTER;36;1;;s16;0;0;0
-i00037;X;;;VVM;AUSSEN;;;;yes;Mittlere Temperatur (BT1);MODBUS_INPUT_REGISTER;37;10;°C;s16;0;0;0
+i00037;X;;;VVM;AUSSEN;;;;used;Mittlere Temperatur (BT1);MODBUS_INPUT_REGISTER;37;10;°C;s16;0;0;0
 i00038;;;;;;;;;no;Heizkesseltemperatur (BT52);MODBUS_INPUT_REGISTER;38;10;°C;s16;0;0;0
-i00039;X;;;VVM;WP;;;;yes;Externer Vorlauf (BT25);MODBUS_INPUT_REGISTER;39;10;°C;s16;0;0;0
-i00040;X;;;VVM;WP;;;;yes;Volumenstrommesser (BF1);MODBUS_INPUT_REGISTER;40;10;l/m;s16;0;0;0
+i00039;X;;;VVM;WP;;;;used;Externer Vorlauf (BT25);MODBUS_INPUT_REGISTER;39;10;°C;s16;0;0;0
+i00040;X;;;VVM;WP;;;;used;Volumenstrommesser (BF1);MODBUS_INPUT_REGISTER;40;10;l/m;s16;0;0;0
 i00041;;;;;;;;;no;Fremdstromanode (EB100-FR1);MODBUS_INPUT_REGISTER;41;1;;s16;0;0;0
 i00046;X;;;ENERGY;HAUS;;;;yes;Strom (BE3);MODBUS_INPUT_REGISTER;46;10;A;u32;0;0;0
 i00048;X;;;ENERGY;HAUS;;;;yes;Strom (BE2);MODBUS_INPUT_REGISTER;48;10;A;u32;0;0;0
@@ -23,10 +23,10 @@ i00062;X;;;;;;;;no;-;MODBUS_INPUT_REGISTER;62;10;°C;s16;0;0;0
 i00063;X;;;;;;;;no;-;MODBUS_INPUT_REGISTER;63;10;°C;s16;0;0;0
 i00064;X;;;;;;;;no;-;MODBUS_INPUT_REGISTER;64;10;°C;s16;0;0;0
 i00065;X;;;;;;;;no;-;MODBUS_INPUT_REGISTER;65;10;°C;s16;0;0;0
-i00072;X;;;VVM;iZH;;;;yes;Zusatzheizung (BT63);MODBUS_INPUT_REGISTER;72;10;°C;s16;0;0;0
+i00072;X;;;VVM;iZH;;;;used;Zusatzheizung (BT63);MODBUS_INPUT_REGISTER;72;10;°C;s16;0;0;0
 i00075;;;;;;;;;no;Rücklauf (EP23-BT3);MODBUS_INPUT_REGISTER;75;10;°C;s16;0;0;0
 i00076;;;;;;;;;no;Rücklauf (EP22-BT3);MODBUS_INPUT_REGISTER;76;10;°C;s16;0;0;0
-i00077;;;;VVM;HZ_FBH;;;;yes;Rücklauf (EP21-BT3);MODBUS_INPUT_REGISTER;77;10;°C;s16;0;0;0
+i00077;;;;VVM;HZ_FBH;;;;used;Rücklauf (EP21-BT3);MODBUS_INPUT_REGISTER;77;10;°C;s16;0;0;0
 i00078;;;;;;;;;no;Rücklauf (EP15-BT3);MODBUS_INPUT_REGISTER;78;10;°C;s16;0;0;0
 i00087;;;;;;;;;no;Brauchwasseraustritt (BT70);MODBUS_INPUT_REGISTER;87;10;°C;s16;0;0;0
 i00094;;;;;;;;;no;Vorlauf (EP47-BT2);MODBUS_INPUT_REGISTER;94;10;°C;s16;0;0;0
@@ -72,15 +72,15 @@ i00271;;;;;;;;;no;Verdichter Gesamtzeit Pool 2, Wärmepumpe 1 (EP14);MODBUS_INPU
 i00279;;;;;;;;;no;Verdichter Gesamtzeit Kühlung, Haupteinheit (EP14);MODBUS_INPUT_REGISTER;279;1;h;u32;0;2147483647;0
 i00281;;;;;;;;;no;Verdichter Gesamtzeit Pool, Haupteinheit (EP14);MODBUS_INPUT_REGISTER;281;1;h;u32;0;2147483647;0
 i00283;;;;;;;;;no;Verdichter Gesamtzeit Pool 2, Haupteinheit (EP14);MODBUS_INPUT_REGISTER;283;1;h;u32;0;2147483647;0
-i00301;;;;VVM;WP;;;;yes;Wärmepumpe 1 angeforderte Verdichterfrequenz;MODBUS_INPUT_REGISTER;301;1;Hz;u8;0;0;0
+i00301;;;;VVM;WP;;;;used;Wärmepumpe 1 angeforderte Verdichterfrequenz;MODBUS_INPUT_REGISTER;301;1;Hz;u8;0;0;0
 i00302;;;;;;;;;no;Haupteinheit angeforderte Verdichterfrequenz;MODBUS_INPUT_REGISTER;302;1;Hz;u8;0;0;0
 i00310;;;;;;;;;?;Frostschutz Wärmeübertrager Haupteinheit;MODBUS_INPUT_REGISTER;310;1;;u8;0;0;0
 i00311;;;;;;;;;no;Status (OPT);MODBUS_INPUT_REGISTER;311;1;;u8;0;0;0
 i00312;;;;;;;;;no;Version (OPT);MODBUS_INPUT_REGISTER;312;1;;u16;0;0;0
 i00313;;;;;;;;;no;OPT Relais, Modulation Niveau;MODBUS_INPUT_REGISTER;313;10;%;s16;0;0;0
 i00315;;;;;;;;;no;OPT Betriebszeit;MODBUS_INPUT_REGISTER;315;1;h;u16;0;0;0
-i00317;;;;VVM;SYS;;;sollwert =1;yes;Verfügbare Verdichter Heizung;MODBUS_INPUT_REGISTER;317;1;;u8;0;0;0
-i00318;;;;VVM;SYS;;;sollwert =1;yes;Verfügbare Verdichter Brauchwasser;MODBUS_INPUT_REGISTER;318;1;;u8;0;0;0
+i00317;;;;VVM;SYS;#discrete;;sollwert =1;yes;Verfügbare Verdichter Heizung;MODBUS_INPUT_REGISTER;317;1;;u8;0;0;0
+i00318;;;;VVM;SYS;#discrete;;sollwert =1;yes;Verfügbare Verdichter Brauchwasser;MODBUS_INPUT_REGISTER;318;1;;u8;0;0;0
 i00319;;;;;;;;;no;Verfügbare Verdichter Pool 1;MODBUS_INPUT_REGISTER;319;1;;u8;0;0;0
 i00321;;;;;;;;;no;Verfügbare Verdichter Kühlung;MODBUS_INPUT_REGISTER;321;1;;u8;0;0;0
 i00337;;;;;;;;;no;Vorlauftemperatur (BT64);MODBUS_INPUT_REGISTER;337;10;°C;s16;0;0;0
@@ -115,14 +115,14 @@ i00381;;;;;;;;;no;id:805;MODBUS_INPUT_REGISTER;381;1;;u32;0;2147483647;0
 i00383;;;;;;;;;no;id:806;MODBUS_INPUT_REGISTER;383;1;;u32;0;0;0
 i00392;;;;;;;;;no;Sekunden bis zur Leerzeit, Ladepumpe 1;MODBUS_INPUT_REGISTER;392;1;;u8;0;0;0
 i00393;;;;;;;;;no;Sekunden bis zur Leerzeit, Ladepumpe 0;MODBUS_INPUT_REGISTER;393;1;;u8;0;0;0
-i00400;;;;S2125;SYS;;;;yes;Alarmnummer von Außenluftwärmepumpe (EB101);MODBUS_INPUT_REGISTER;400;1;;u8;0;0;0
-i00401;;;;S2125;VENT;;;;yes;Ventilatordrehzahl (EB101);MODBUS_INPUT_REGISTER;401;1;rpm;u16;0;0;0
+i00400;;;;S2125;SYS;#discrete;;;used;Alarmnummer von Außenluftwärmepumpe (EB101);MODBUS_INPUT_REGISTER;400;1;;u8;0;0;0
+i00401;;;;S2125;VENT;;;;used;Ventilatordrehzahl (EB101);MODBUS_INPUT_REGISTER;401;1;rpm;u16;0;0;0
 i00402;;;;S2125;VENT;;;;yes;Max. Ventilatordrehzahl (EB101);MODBUS_INPUT_REGISTER;402;1;rpm;u16;0;0;0
 i00403;;;;S2125;VENT;;;;yes;Min. Ventilatordrehzahl (EB101);MODBUS_INPUT_REGISTER;403;1;rpm;u16;0;0;0
 i00404;;;;S2125;KWM;;;;yes;Max. Verdichterdrehzahl (EB101);MODBUS_INPUT_REGISTER;404;10;Hz;u16;0;0;0
 i00405;;;;S2125;KWM;;;;yes;Min. Verdichterdrehzahl (EB101);MODBUS_INPUT_REGISTER;405;10;Hz;u16;0;0;0
 i00406;;;;ENERGY;WP;;;;yes;Erzeugte Leistung Wärme (EB101);MODBUS_INPUT_REGISTER;406;10;kW;u16;0;0;0
-i00407;;;;S2125;ENTEIS;;;;yes;Zeit bis Enteisung (EB101);MODBUS_INPUT_REGISTER;407;1;min;u16;0;0;0
+i00407;;;;S2125;ENTEIS;;;;used;Zeit bis Enteisung (EB101);MODBUS_INPUT_REGISTER;407;1;min;u16;0;0;0
 i00408;;;;S2125;ENTEIS;;;;yes;Enteisung Index (EB101);MODBUS_INPUT_REGISTER;408;1;;u16;0;0;0
 i00409;;;;S2125;KWM;;;;yes;Überhitzung Referenz EEV (EB101);MODBUS_INPUT_REGISTER;409;10;°C;s16;0;0;0
 i00410;;;;S2125;KWM;;;;yes;Überhitzung EEV (EB101);MODBUS_INPUT_REGISTER;410;10;°C;s16;0;0;0
@@ -251,18 +251,18 @@ i01008;;;;;;;;;?;Hat eine Phase (EB101);MODBUS_INPUT_REGISTER;1008;1;;u8;0;0;0
 i01009;;;;;;;;;?;Serieller Index (EB101);MODBUS_INPUT_REGISTER;1009;1;;u8;0;0;0
 i01011;;;;;;;;;no;Serieller Index (EB100);MODBUS_INPUT_REGISTER;1011;1;;u8;0;0;0
 i01012;;;;VVM;SYS;;;;yes;Alarm inkompatibel (Wärmepumpe);MODBUS_INPUT_REGISTER;1012;1;;u16;0;0;0
-i01016;;;;VVM;HZ_FBH;;;;yes;Berechneter Vorlauf Klimatisierungssystem 2;MODBUS_INPUT_REGISTER;1016;10;°C;s16;0;0;0
-i01017;X;;;VVM;HZ_HK;;;;yes;Berechneter Vorlauf Klimatisierungssystem 1;MODBUS_INPUT_REGISTER;1017;10;°C;s16;0;0;0
+i01016;;;;VVM;HZ_FBH;;;;used;Berechneter Vorlauf Klimatisierungssystem 2;MODBUS_INPUT_REGISTER;1016;10;°C;s16;0;0;0
+i01017;X;;;VVM;HZ_HK;;;;used;Berechneter Vorlauf Klimatisierungssystem 1;MODBUS_INPUT_REGISTER;1017;10;°C;s16;0;0;0
 i01018;;;;VVM;SYS;;;;yes;Frostschutz Status;MODBUS_INPUT_REGISTER;1018;1;;u16;0;0;0
 i01019;;;;;;;;;no;Kühlung Status;MODBUS_INPUT_REGISTER;1019;1;;u8;0;0;0
 i01025;;;;VVM;iZH;;;;yes;Gesamtbetriebszeit Zusatzheizung;MODBUS_INPUT_REGISTER;1025;10;h;s32;0;1000000;0
-i01027;X;;;VVM;iZH;;;;yes;Leistung interne Zusatzheizung;MODBUS_INPUT_REGISTER;1027;100;kW;s16;0;0;0
+i01027;X;;;VVM;iZH;;;;used;Leistung interne Zusatzheizung;MODBUS_INPUT_REGISTER;1027;100;kW;s16;0;0;0
 i01028;;;;VVM;SYS;"{""10"": ""off"", ""20"": ""hot water"", ""30"": ""heat"", ""40"": ""pool"", ""60"": ""cooling"" }";;"10 - off
 20 - hot water
 30 - heat
 40 - pool
-60 - cooling";yes;Prio;MODBUS_INPUT_REGISTER;1028;1;;u8;0;0;0
-i01029;X;;;VVM;iZH;;;;yes;Betriebsmodus interne Zusatzheizung;MODBUS_INPUT_REGISTER;1029;1;;u8;0;0;0
+60 - cooling";used;Prio;MODBUS_INPUT_REGISTER;1028;1;;u8;0;0;0
+i01029;X;;;VVM;iZH;;;;used;Betriebsmodus interne Zusatzheizung;MODBUS_INPUT_REGISTER;1029;1;;u8;0;0;0
 i01030;;;;;;;;;no;Betriebsmodus Mischventil Klimatisierungssystem 4;MODBUS_INPUT_REGISTER;1030;1;;u8;0;0;0
 i01031;;;;;;;;;no;Betriebsmodus Mischventil Klimatisierungssystem 3;MODBUS_INPUT_REGISTER;1031;1;;u8;0;0;0
 i01032;;;;VVM;HZ_FBH;"{""0"": ""inactive"", ""10"": ""off"", ""20"": ""opening"", ""30"": ""closing"" }";;"0 - inactive
@@ -278,32 +278,32 @@ i01054;;;;;;;;;no;Externe Justierung Klimatisierungssystem 4;MODBUS_INPUT_REGIST
 i01055;;;;;;;;;no;Externe Justierung Klimatisierungssystem 3;MODBUS_INPUT_REGISTER;1055;1;;u8;0;0;0
 i01056;;;;;;;;;no;Externe Justierung Klimatisierungssystem 2;MODBUS_INPUT_REGISTER;1056;1;;u8;0;0;0
 i01057;;;;;;;;;no;Externe Justierung Klimatisierungssystem 1;MODBUS_INPUT_REGISTER;1057;1;;u8;0;0;0
-i01058;;;;VVM;SYS;"{""0"": ""off"", ""*"": ""on"" }";;;yes;Externe Blockierung;MODBUS_INPUT_REGISTER;1058;1;;u8;0;0;0
+i01058;;;;VVM;SYS;#0off*on;;;yes;Externe Blockierung;MODBUS_INPUT_REGISTER;1058;1;;u8;0;0;0
 i01062;;;;VVM;;;;;no;Stufengeregelte Zusatzheizung Blockierung;MODBUS_INPUT_REGISTER;1062;1;;u8;0;0;0
-i01063;;;;VVM;BW;"{""0"": ""off"", ""*"": ""on"" }";;"0 - off
-1 - on";yes;Brauchwasserzirkulation (GP11);MODBUS_INPUT_REGISTER;1063;1;;u8;0;0;0
+i01063;;;;VVM;BW;#0off*on;;"0 - off
+1 - on";used;Brauchwasserzirkulation (GP11);MODBUS_INPUT_REGISTER;1063;1;;u8;0;0;0
 i01069;;;;VVM;BW;;;;yes;Gesamtbetriebszeit Brauchwasser ZH;MODBUS_INPUT_REGISTER;1069;10;h;s32;0;9999999;0
-i01078;;;;VVM;BW;"{""0"": ""off"", ""*"": ""on"" }";;;yes;Mehr Brauchwasser Status;MODBUS_INPUT_REGISTER;1078;1;;u8;0;0;0
+i01078;;;;VVM;BW;#0off*on;;;yes;Mehr Brauchwasser Status;MODBUS_INPUT_REGISTER;1078;1;;u8;0;0;0
 i01102;X;;;VVM;;;;Duplette?;?;Drehzahl Heizungsumwälzpumpe (GP1);MODBUS_INPUT_REGISTER;1102;1;%;u8;0;0;0
-i01108;;;;VVM;SYS;;;sollwert =1;yes;Angeschlossene Verdichter Heizung;MODBUS_INPUT_REGISTER;1108;1;;u8;0;0;0
-i01109;;;;VVM;SYS;;;sollwert =1;yes;Angeschlossene Verdichter Brauchwasser;MODBUS_INPUT_REGISTER;1109;1;;u8;0;0;0
+i01108;;;;VVM;SYS;#discrete;;sollwert =1;yes;Angeschlossene Verdichter Heizung;MODBUS_INPUT_REGISTER;1108;1;;u8;0;0;0
+i01109;;;;VVM;SYS;#discrete;;sollwert =1;yes;Angeschlossene Verdichter Brauchwasser;MODBUS_INPUT_REGISTER;1109;1;;u8;0;0;0
 i01110;;;;;;;;;no;Angeschlossene Verdichter Pool 1;MODBUS_INPUT_REGISTER;1110;1;;u8;0;0;0
 i01115;;;;;;;;;no;Betriebsmodus stufengeregelte Zusatzheizung;MODBUS_INPUT_REGISTER;1115;1;;u8;0;0;0
 i01117;;;;;;;;;no;Relaisstatus, Basisplatine (EB100-EP14);MODBUS_INPUT_REGISTER;1117;1;;u8;0;0;0
 i01119;;;;;;;;;no;Relaisstatus, Elektroheizpatronenplatine (EB100-EP14);MODBUS_INPUT_REGISTER;1119;1;;u16;0;0;0
-i01120;;;X;VVM;SYS;;;;yes;Aktueller Status;MODBUS_INPUT_REGISTER;1120;1;;u32;0;0;0
-i01122;;;X;VVM;SYS;;;;yes;Funktionalität Wärmepumpe (EP14);MODBUS_INPUT_REGISTER;1122;1;;u32;0;0;0
+i01120;;;X;VVM;SYS;#discrete;;;yes;Aktueller Status;MODBUS_INPUT_REGISTER;1120;1;;u32;0;0;0
+i01122;;;X;VVM;SYS;#discrete;;;yes;Funktionalität Wärmepumpe (EP14);MODBUS_INPUT_REGISTER;1122;1;;u32;0;0;0
 i01124;;;X;VVM;SYS;;;? Dauerwert=2;yes;Aktive Wärmepumpen;MODBUS_INPUT_REGISTER;1124;1;;u16;0;0;0
-i01125;;;X;VVM;SYS;;;;yes;Funktionalität Wärmepumpe (EP15);MODBUS_INPUT_REGISTER;1125;1;;u32;0;0;0
+i01125;;;X;VVM;SYS;#discrete;;;yes;Funktionalität Wärmepumpe (EP15);MODBUS_INPUT_REGISTER;1125;1;;u32;0;0;0
 i01129;;;;VVM;BW;;;;yes;Betriebsmodus Brauchwasserkomfort;MODBUS_INPUT_REGISTER;1129;1;;u8;0;0;0
 i01130;;;;VVM;BW;;;;yes;Betriebsmodus Brauchwasserkomfort Zusatzheizung;MODBUS_INPUT_REGISTER;1130;1;;u8;0;0;0
-i01132;;;;VVM;SYS;"{""0"": ""off"", ""*"": ""on"" }";;;yes;Blockiert;MODBUS_INPUT_REGISTER;1132;1;;u8;0;0;0
+i01132;;;;VVM;SYS;#0off*on;;;used;Blockiert;MODBUS_INPUT_REGISTER;1132;1;;u8;0;0;0
 i01134;;;;;;;;;no;Pool 1 (QN19);MODBUS_INPUT_REGISTER;1134;1;;u8;0;0;0
-i01451;;;X;S2125;SYS;;;;yes;Version (EB101);MODBUS_INPUT_REGISTER;1451;1;;u16;0;0;0
-i01452;;;X;S2125;SYS;;;;yes;Wärmepumpentyp (EB101);MODBUS_INPUT_REGISTER;1452;1;;u8;0;0;0
-i01453;;;X;S2125;SYS;;;;yes;Verdichtergröße (EB101);MODBUS_INPUT_REGISTER;1453;1;;u8;0;0;0
-i01475;X;;;S2125;WP;;;;yes;Rücklauf (EB101-BT3);MODBUS_INPUT_REGISTER;1475;10;°C;s16;0;0;0
-i01478;X;;;S2125;WP;;;;yes;Vorlauf (EB101-BT12);MODBUS_INPUT_REGISTER;1478;10;°C;s16;0;0;0
+i01451;;;X;S2125;SYS;#discrete;;;yes;Version (EB101);MODBUS_INPUT_REGISTER;1451;1;;u16;0;0;0
+i01452;;;X;S2125;SYS;#discrete;;;yes;Wärmepumpentyp (EB101);MODBUS_INPUT_REGISTER;1452;1;;u8;0;0;0
+i01453;;;X;S2125;SYS;#discrete;;;yes;Verdichtergröße (EB101);MODBUS_INPUT_REGISTER;1453;1;;u8;0;0;0
+i01475;X;;;S2125;WP;;;;used;Rücklauf (EB101-BT3);MODBUS_INPUT_REGISTER;1475;10;°C;s16;0;0;0
+i01478;X;;;S2125;WP;;;;used;Vorlauf (EB101-BT12);MODBUS_INPUT_REGISTER;1478;10;°C;s16;0;0;0
 i01479;X;;;S2125;KWM;;;;yes;Heißgas (EB101-BT14);MODBUS_INPUT_REGISTER;1479;10;°C;s16;0;0;0
 i01480;X;;;S2125;KWM;;;;yes;Flüssigkeitsleitung (EB101-BT15);MODBUS_INPUT_REGISTER;1480;10;°C;s16;0;0;0
 i01481;X;;;S2125;KWM;;;;yes;Sauggas (EB101-BT17);MODBUS_INPUT_REGISTER;1481;10;°C;s16;0;0;0
@@ -312,7 +312,7 @@ i01485;;;;S2125;KWM;;;;yes;Verdichter, Zeit bis Start (EB101-EP14);MODBUS_INPUT_
 i01489;;;;S2125;KWM;;;;yes;Verdichter, Anzahl Starts (EB101-EP14);MODBUS_INPUT_REGISTER;1489;1;;u32;0;2147483647;0
 i01491;;;;S2125;KWM;;;;yes;Verdichter, Gesamtbetriebszeit (EB101-EP14);MODBUS_INPUT_REGISTER;1491;1;h;u32;0;2147483647;0
 i01493;;;;S2125;KWM;;;;yes;Verdichter, Betriebszeit Brauchwasser (EB101-EP14);MODBUS_INPUT_REGISTER;1493;1;h;u32;0;2147483647;0
-i01495;;;;S2125;SYS;;;;yes;Alarmnummer (EB101-EP14);MODBUS_INPUT_REGISTER;1495;1;;u16;0;0;0
+i01495;;;;S2125;SYS;#discrete;;;used;Alarmnummer (EB101-EP14);MODBUS_INPUT_REGISTER;1495;1;;u16;0;0;0
 i01497;;;;;;;;;no;Wärmepumpentyp (EB100);MODBUS_INPUT_REGISTER;1497;1;;u8;0;0;0
 i01498;;;;;;;;;no;Verdichtergröße (EB100);MODBUS_INPUT_REGISTER;1498;1;;u8;0;0;0
 i01556;;;;S2125;KWM;;;;yes;Verdichter, angefordert (EB101-EP14);MODBUS_INPUT_REGISTER;1556;1;;u8;0;0;0
@@ -322,29 +322,29 @@ i01575;;;;ENERGY;BW;;;;yes;Brauchwasser, einschl. interner ZH;MODBUS_INPUT_REGIS
 i01577;;;;ENERGY;HZ;;;;yes;Heizung, einschl. interner ZH;MODBUS_INPUT_REGISTER;1577;10;kWh;u32;0;0;0
 i01583;;;;ENERGY;BW;;;;yes;Brauchwasser, nur Verdichter;MODBUS_INPUT_REGISTER;1583;10;kWh;u32;0;0;0
 i01585;;;;ENERGY;HZ;;;;yes;Heizung, nur Verdichter;MODBUS_INPUT_REGISTER;1585;10;kWh;u32;0;0;0
-i01621;X;;;S2125;AUSSEN;;;;yes;Außenlufttemperatur (EB101-BT28);MODBUS_INPUT_REGISTER;1621;10;°C;s16;0;0;0
+i01621;X;;;S2125;AUSSEN;;;;used;Außenlufttemperatur (EB101-BT28);MODBUS_INPUT_REGISTER;1621;10;°C;s16;0;0;0
 i01622;X;;;S2125;KWM;;;;yes;Verdampfer (EB101-BT16);MODBUS_INPUT_REGISTER;1622;10;°C;s16;0;0;0
-i01636;X;;;VVM;HZ;;;;yes;Drehzahl Heizungsumwälzpumpe (GP1);MODBUS_INPUT_REGISTER;1636;1;%;u8;0;0;0
+i01636;X;;;VVM;HZ;;;;used;Drehzahl Heizungsumwälzpumpe (GP1);MODBUS_INPUT_REGISTER;1636;1;%;u8;0;0;0
 i01637;;;;;;;;;no;id:2793;MODBUS_INPUT_REGISTER;1637;1;%;u8;0;0;0
 i01638;;;;VVM;SYS;;;;yes;Frostschutz Wärmeübertrager Wärmepumpe 1;MODBUS_INPUT_REGISTER;1638;1;;u8;0;0;0
 i01693;;;;;;;;;no;Betriebsmodus externe Zusatzheizung;MODBUS_INPUT_REGISTER;1693;1;;u8;0;0;0
 i01694;;;;;;;;;no;Angeschlossene Verdichter Kühlung;MODBUS_INPUT_REGISTER;1694;1;;u8;0;0;0
 i01800;;;;;;;;;no;BP4, unbearbeitet (EB101-EP14);MODBUS_INPUT_REGISTER;1800;1;;s16;0;0;0
 i01802;X;;;S2125;KWM;;;;yes;Niederdruck (EB101-BP8);MODBUS_INPUT_REGISTER;1802;10;bar;s16;0;0;0
-i01803;X;;;S2125;KWM;;;;yes;Aktuelle Verdichterfrequenz (EB101);MODBUS_INPUT_REGISTER;1803;10;Hz;s16;0;0;0
-i01804;X;;;S2125;SYS;;;;yes;Schutzmodus (EB101);MODBUS_INPUT_REGISTER;1804;1;;u16;0;0;0
+i01803;X;;;S2125;KWM;;;;used;Aktuelle Verdichterfrequenz (EB101);MODBUS_INPUT_REGISTER;1803;10;Hz;s16;0;0;0
+i01804;X;;;S2125;SYS;#discrete;;;used;Schutzmodus (EB101);MODBUS_INPUT_REGISTER;1804;1;;u16;0;0;0
 i01805;;;;S2125;ENTEIS;"{""0"": ""off"", ""1"": ""active"", ""2"": ""passive"" }";;"0 - off
 1 - active
-2 - passive";yes;Enteisung (EB101);MODBUS_INPUT_REGISTER;1805;1;;u8;0;0;0
+2 - passive";used;Enteisung (EB101);MODBUS_INPUT_REGISTER;1805;1;;u8;0;0;0
 i01806;;;;S2125;SYS;;;;yes;Leistung (EB101-EP14);MODBUS_INPUT_REGISTER;1806;1;kW;u8;0;0;0
 i01822;;;;;;;;;?;Interne Ladepumpe (GP12);MODBUS_INPUT_REGISTER;1822;1;;u8;0;0;0
 i01823;;;;;;;;;no;Klimatisierungssystem 4;MODBUS_INPUT_REGISTER;1823;1;;u8;0;0;0
 i01824;;;;;;;;;no;Klimatisierungssystem 3;MODBUS_INPUT_REGISTER;1824;1;;u8;0;0;0
-i01825;;;;VVM;HZ_FBH;"{""0"": ""off"", ""*"": ""on"" }";;"0 - off
+i01825;;;;VVM;HZ_FBH;#0off*on;;"0 - off
 1 - on";yes;Klimatisierungssystem 2;MODBUS_INPUT_REGISTER;1825;1;;u8;0;0;0
 i01826;;;;;;;;;?;Klimatisierungssystem 1 (VBP);MODBUS_INPUT_REGISTER;1826;1;;u8;0;0;0
 i01828;;;;;;;;;no;Pool 1 Pumpenstatus;MODBUS_INPUT_REGISTER;1828;1;;u8;0;0;0
-i01854;X;;;S2125;KWM;;;;yes;Angeforderte Verdichterfrequenz (EB101);MODBUS_INPUT_REGISTER;1854;1;Hz;u8;0;0;0
+i01854;X;;;S2125;KWM;;;;used;Angeforderte Verdichterfrequenz (EB101);MODBUS_INPUT_REGISTER;1854;1;Hz;u8;0;0;0
 i01902;;;;S2125;KWM;;;;yes;Niederdrucksensor, unbearbeitet (EB101-EP14);MODBUS_INPUT_REGISTER;1902;1;;s16;0;0;0
 i01903;;;;ENERGY;KWM;;;;yes;Aktueller Sensor (EB101-EP14);MODBUS_INPUT_REGISTER;1903;10;A;s16;0;0;0
 i01911;;;;;;;;;no;Betriebsmodus (SG Ready);MODBUS_INPUT_REGISTER;1911;1;;u8;0;0;0
@@ -363,16 +363,16 @@ i01971;;;;;;;;;no;Ventilatordrehzahl (EB100-EP15);MODBUS_INPUT_REGISTER;1971;1;;
 i01972;;;;;;;;;no;Verdampfer 2 (EB100-EP14-BT16);MODBUS_INPUT_REGISTER;1972;10;°C;s16;0;0;0
 i01973;;;;;;;;;no;Temperatur, Wechselrichter (EB100-EP14);MODBUS_INPUT_REGISTER;1973;10;°C;s16;0;0;0
 i01974;;;;;;;;;no;Ventilatordrehzahl (EB100-EP14);MODBUS_INPUT_REGISTER;1974;1;;u8;0;0;0
-i01975;X;;;VVM;SYS;;;;yes;Alarmnummer;MODBUS_INPUT_REGISTER;1975;1;;s16;0;0;0
-i01976;X;;;VVM;SYS;;;;yes;Nicht modulspezifische Alarmnummern;MODBUS_INPUT_REGISTER;1976;1;;s16;0;0;0
+i01975;X;;;VVM;SYS;#discrete;;;used;Alarmnummer;MODBUS_INPUT_REGISTER;1975;1;;s16;0;0;0
+i01976;X;;;VVM;SYS;#discrete;;;used;Nicht modulspezifische Alarmnummern;MODBUS_INPUT_REGISTER;1976;1;;s16;0;0;0
 i01977;;;;;;;;;no;Bodentrocknung Dauer.;MODBUS_INPUT_REGISTER;1977;1;;u16;0;10000;0
 i01993;;;;;;;;;no;id:6028;MODBUS_INPUT_REGISTER;1993;1;;u8;0;0;0
 i01994;;;;;;;;;no;id:6029;MODBUS_INPUT_REGISTER;1994;1;;u16;0;0;0
 i02004;;;;;;;;;no;id:6756;MODBUS_INPUT_REGISTER;2004;10;%RH;s16;0;0;0
 i02005;;;;;;;;;no;id:6757;MODBUS_INPUT_REGISTER;2005;10;%RH;s16;0;0;0
 i02006;;;;;;;;;no;id:6758;MODBUS_INPUT_REGISTER;2006;10;%RH;s16;0;0;0
-i02014;X;;;VVM;BW;;;;yes;Brauchwasser Start (BT5);MODBUS_INPUT_REGISTER;2014;10;°C;s16;0;0;0
-i02147;;;;S2125;SYS;;;;yes;Version Inverter (EB101);MODBUS_INPUT_REGISTER;2147;1;;u8;0;0;0
+i02014;X;;;VVM;BW;;;;used;Brauchwasser Start (BT5);MODBUS_INPUT_REGISTER;2014;10;°C;s16;0;0;0
+i02147;;;X;S2125;SYS;#discrete;;;yes;Version Inverter (EB101);MODBUS_INPUT_REGISTER;2147;1;;u8;0;0;0
 i02158;;;;;;;;;?;Letzte Enteisung Wärmepumpe 1;MODBUS_INPUT_REGISTER;2158;1;;u8;0;255;255
 i02168;;;;;;;;;no;Ventilatormodus 5;MODBUS_INPUT_REGISTER;2168;1;%;u8;0;0;0
 i02169;;;;;;;;;no;Ventilatormodus 6;MODBUS_INPUT_REGISTER;2169;1;%;u8;0;0;0
@@ -383,9 +383,9 @@ i02176;;;;;;;;;no;Istleistung;MODBUS_INPUT_REGISTER;2176;1;W;u32;0;0;0
 i02178;;;;;;;;;no;Durchschn. Gesamtleistung (EME 20);MODBUS_INPUT_REGISTER;2178;100;kW;u32;0;0;0
 i02180;;;;;;;;;no;Gesamtenergie;MODBUS_INPUT_REGISTER;2180;10;kWh;s32;0;0;0
 i02195;;;;VVM;SYS;"{""0"": ""no alarm"", ""*"": ""active alarm"" }";;"0 - No alarm
-1 - Active alarm";yes;Alarm Klasse 1;MODBUS_INPUT_REGISTER;2195;1;;u8;0;0;0
+1 - Active alarm";used;Alarm Klasse 1;MODBUS_INPUT_REGISTER;2195;1;;u8;0;0;0
 i02196;;;;VVM;BW;"{""0"": ""heating"", ""1"": ""hot water"" }";;"0 - heating
-1 - hot water";yes;Umschaltventil Brauchwasser (QN10);MODBUS_INPUT_REGISTER;2196;1;;u8;0;0;0
+1 - hot water";used;Umschaltventil Brauchwasser (QN10);MODBUS_INPUT_REGISTER;2196;1;;u8;0;0;0
 i02243;;;;;;;;;no;id:13796;MODBUS_INPUT_REGISTER;2243;1;;u8;0;0;0
 i02244;;;;;;;;;no;id:13797;MODBUS_INPUT_REGISTER;2244;1;;u8;0;0;0
 i02245;;;;;;;;;no;id:13798;MODBUS_INPUT_REGISTER;2245;1;;u8;0;0;0
@@ -461,16 +461,16 @@ i05212;;;;;;;;;no;id:26698;MODBUS_INPUT_REGISTER;5212;1;;u8;0;0;0
 i05213;;;;;;;;;no;id:26699;MODBUS_INPUT_REGISTER;5213;1;;u8;0;0;0
 i05986;;;;;;;;;no;id:29970;MODBUS_INPUT_REGISTER;5986;1;;u8;0;0;0
 h00000;;;;;;;;;no;Temperatur Überlastung Pool;MODBUS_HOLDING_REGISTER;0;1;°C;u8;1;50;1
-h00011;X;;;VVM;GM;;;;yes;Gradminuten;MODBUS_HOLDING_REGISTER;11;10;GM;s32;-30000;30000;0
+h00011;X;;;VVM;GM;;;;used;Gradminuten;MODBUS_HOLDING_REGISTER;11;10;GM;s32;-30000;30000;0
 h00018;;;;VVM;GM;;;;yes;Begrenzung GM;MODBUS_HOLDING_REGISTER;18;10;GM;s16;-30000;30000;0
 h00019;;;;VVM;SYS;;;;yes;Urlaubsfunktion Status;MODBUS_HOLDING_REGISTER;19;1;;s8;0;0;0
 h00020;;;;;;;;;no;Kühlgradminuten;MODBUS_HOLDING_REGISTER;20;10;GM;s16;-30000;30000;0
 h00021;;;;;;;;;no;Kühlpumpe manuelle Drehzahl;MODBUS_HOLDING_REGISTER;21;1;%;u8;1;100;70
 h00022;;;;;;;;;?;Alarm zurücksetzen;MODBUS_HOLDING_REGISTER;22;1;;u8;0;0;0
-h00025;;;;VVM;HZ_FBH;;;;yes;Heizkurve Klimatisierungssystem 2;MODBUS_HOLDING_REGISTER;25;1;;s8;0;15;9
-h00026;;;;VVM;HZ_HK;;;;yes;Heizkurve Klimatisierungssystem 1;MODBUS_HOLDING_REGISTER;26;1;;s8;0;15;9
-h00029;;;;VVM;HZ_FBH;;;;yes;Verschieb. Heizkurve Klimatisierungssystem 2;MODBUS_HOLDING_REGISTER;29;1;;s8;-10;10;0
-h00030;;;;VVM;HZ_HK;;;;yes;Verschieb. Heizkurve Klimatisierungssystem 1;MODBUS_HOLDING_REGISTER;30;1;;s8;-10;10;0
+h00025;;;;VVM;HZ_FBH;#discrete;;;yes;Heizkurve Klimatisierungssystem 2;MODBUS_HOLDING_REGISTER;25;1;;s8;0;15;9
+h00026;;;;VVM;HZ_HK;#discrete;;;yes;Heizkurve Klimatisierungssystem 1;MODBUS_HOLDING_REGISTER;26;1;;s8;0;15;9
+h00029;;;;VVM;HZ_FBH;#discrete;;;yes;Verschieb. Heizkurve Klimatisierungssystem 2;MODBUS_HOLDING_REGISTER;29;1;;s8;-10;10;0
+h00030;;;;VVM;HZ_HK;#discrete;;;yes;Verschieb. Heizkurve Klimatisierungssystem 1;MODBUS_HOLDING_REGISTER;30;1;;s8;-10;10;0
 h00033;;;;VVM;HZ_FBH;;;;yes;Niedrigster Vorlauf Klimatisierungssystem 2;MODBUS_HOLDING_REGISTER;33;10;°C;s16;50;800;200
 h00034;;;;VVM;HZ_HK;;;;yes;Niedrigster Vorlauf Klimatisierungssystem 1;MODBUS_HOLDING_REGISTER;34;10;°C;s16;50;800;200
 h00037;;;;VVM;HZ_FBH;;;;yes;Höchster Vorlauf Klimatisierungssystem 2;MODBUS_HOLDING_REGISTER;37;10;°C;s16;50;800;600
@@ -492,19 +492,19 @@ h00056;;;;VVM;BW;"{""0"": ""small"", ""1"": ""medium"", ""2"": ""large"", ""3"":
 1 - medium
 2 - large
 3 - not in use
-4 - smart control";yes;Brauchwasser Bedarfsmodus;MODBUS_HOLDING_REGISTER;56;1;;s8;0;4;1
-h00058;;;;VVM;BW;;;;yes;Starttemperatur BW hohe Temperatur;MODBUS_HOLDING_REGISTER;58;10;°C;s16;50;700;530
-h00059;;;;VVM;BW;;;;yes;Starttemperatur BW normale Temperatur;MODBUS_HOLDING_REGISTER;59;10;°C;s16;50;700;480
-h00060;;;;VVM;BW;;;;yes;Starttemperatur BW niedrige Temperatur;MODBUS_HOLDING_REGISTER;60;10;°C;s16;50;700;430
+4 - smart control";used;Brauchwasser Bedarfsmodus;MODBUS_HOLDING_REGISTER;56;1;;s8;0;4;1
+h00058;;;;VVM;BW;;;;used;Starttemperatur BW hohe Temperatur;MODBUS_HOLDING_REGISTER;58;10;°C;s16;50;700;530
+h00059;;;;VVM;BW;;;;used;Starttemperatur BW normale Temperatur;MODBUS_HOLDING_REGISTER;59;10;°C;s16;50;700;480
+h00060;;;;VVM;BW;;;;used;Starttemperatur BW niedrige Temperatur;MODBUS_HOLDING_REGISTER;60;10;°C;s16;50;700;430
 h00061;;;;VVM;BW;;;;yes;Stopptemperatur BW periodische Erhöhung;MODBUS_HOLDING_REGISTER;61;10;°C;s16;550;700;550
-h00062;;;;VVM;BW;;;;yes;Stopptemperatur BW hohe Temperatur;MODBUS_HOLDING_REGISTER;62;10;°C;s16;50;700;550
-h00063;;;;VVM;BW;;;;yes;Stopptemperatur BW normale Temperatur;MODBUS_HOLDING_REGISTER;63;10;°C;s16;50;700;510
-h00064;;;;VVM;BW;;;;yes;Stopptemperatur BW niedrige Temperatur;MODBUS_HOLDING_REGISTER;64;10;°C;s16;50;700;480
+h00062;;;;VVM;BW;;;;used;Stopptemperatur BW hohe Temperatur;MODBUS_HOLDING_REGISTER;62;10;°C;s16;50;700;550
+h00063;;;;VVM;BW;;;;used;Stopptemperatur BW normale Temperatur;MODBUS_HOLDING_REGISTER;63;10;°C;s16;50;700;510
+h00064;;;;VVM;BW;;;;used;Stopptemperatur BW niedrige Temperatur;MODBUS_HOLDING_REGISTER;64;10;°C;s16;50;700;480
 h00065;;;;VVM;BW;;;;yes;Periodisches Brauchwasser;MODBUS_HOLDING_REGISTER;65;1;;s8;0;1;1
 h00066;;;;VVM;BW;;;;yes;Periodisches Brauchwasser-Intervall;MODBUS_HOLDING_REGISTER;66;1;Tage;s8;1;90;7
 h00067;;;;;;;;;no;Startzeit periodisches BW;MODBUS_HOLDING_REGISTER;67;1;;-;-;-;-
 h00069;;;;VVM;SYS;;;;yes;Stillstandszeit;MODBUS_HOLDING_REGISTER;69;1;min;s8;0;60;0
-h00091;;;X;VVM;SYS;;;;yes;Sprache;MODBUS_HOLDING_REGISTER;91;1;;s8;0;24;0
+h00091;;;X;VVM;SYS;#discrete;;;yes;Sprache;MODBUS_HOLDING_REGISTER;91;1;;s8;0;24;0
 h00092;;;;VVM;BW;;;;yes;Periodenzeit Brauchwasser;MODBUS_HOLDING_REGISTER;92;1;min;u8;0;180;30
 h00093;;;;VVM;HZ;;;;yes;Periodenzeit Heizung;MODBUS_HOLDING_REGISTER;93;1;min;u8;0;180;30
 h00095;;;;VVM;SYS;;;;yes;Betriebsmodus HU-Pumpe;MODBUS_HOLDING_REGISTER;95;1;;u8;10;40;40
@@ -529,7 +529,7 @@ h00133;;;;;;;;;no;Bodentrocknung Temp. 2;MODBUS_HOLDING_REGISTER;133;1;°C;u8;15
 h00134;;;;;;;;;no;Bodentrocknung Temp. 1;MODBUS_HOLDING_REGISTER;134;1;°C;u8;15;70;20
 h00140;;;;VVM;SYS;;;;yes;Dimensionierte Außenlufttemperatur;MODBUS_HOLDING_REGISTER;140;10;°C;s16;-400;200;-180
 h00141;;;;VVM;SYS;;;;yes;Delta-T für NAT;MODBUS_HOLDING_REGISTER;141;10;°C;s16;10;250;100
-h00142;;;;VVM;HZ_FBH;"{""0"": ""off"", ""*"": ""on"" }";;;yes;Klimatisierungssystem 2;MODBUS_HOLDING_REGISTER;142;1;;u8;0;1;0
+h00142;;;;VVM;HZ_FBH;#0off*on;;;yes;Klimatisierungssystem 2;MODBUS_HOLDING_REGISTER;142;1;;u8;0;1;0
 h00143;;;;;;;;;no;Klimatisierungssystem 3;MODBUS_HOLDING_REGISTER;143;1;;u8;0;1;0
 h00144;;;;;;;;;no;Klimatisierungssystem 4;MODBUS_HOLDING_REGISTER;144;1;;u8;0;1;0
 h00147;;;;VVM;HZ_FBH;;;;yes;Klimatisierungssystem 2 Mischventilverstärkung;MODBUS_HOLDING_REGISTER;147;10;;s8;1;100;10
@@ -546,11 +546,11 @@ h00176;;;;;;;;;no;System 1 (RMU);MODBUS_HOLDING_REGISTER;176;1;;u8;0;1;0
 h00177;;;;;;;;;no;System 2 (RMU);MODBUS_HOLDING_REGISTER;177;1;;u8;0;1;0
 h00178;;;;;;;;;no;System 3 (RMU);MODBUS_HOLDING_REGISTER;178;1;;u8;0;1;0
 h00179;;;;;;;;;no;System 4 (RMU);MODBUS_HOLDING_REGISTER;179;1;;u8;0;1;0
-h00180;;;;VVM;SYS;"{""0"": ""off"", ""*"": ""on"" }";;"0 - off
+h00180;;;;VVM;SYS;#0off*on;;"0 - off
 1 - on";yes;Zusatzheizung zulassen, Heizung;MODBUS_HOLDING_REGISTER;180;1;;u8;0;1;1
-h00181;;;;VVM;SYS;"{""0"": ""off"", ""*"": ""on"" }";;"0 - off
+h00181;;;;VVM;SYS;#0off*on;;"0 - off
 1 - on";yes;Heizung zulassen;MODBUS_HOLDING_REGISTER;181;1;;u8;0;1;1
-h00182;;;X;VVM;SYS;"{""0"": ""off"", ""*"": ""on"" }";;"0 - off
+h00182;;;X;VVM;SYS;#0off*on;;"0 - off
 1 - on";yes;Kühlung zulassen;MODBUS_HOLDING_REGISTER;182;1;;u8;0;1;1
 h00184;;;;VVM;SYS;;;;yes;Automatikmodus, Stopptemperatur für Heizung;MODBUS_HOLDING_REGISTER;184;10;°C;s16;-200;400;170
 h00185;;;;VVM;SYS;;;;yes;Automatikmodus, Zusatzheizung Stopptemperatur;MODBUS_HOLDING_REGISTER;185;10;°C;s16;-250;400;50
@@ -558,9 +558,9 @@ h00186;;;;VVM;SYS;;;;yes;Automatikmodus Filterzeit;MODBUS_HOLDING_REGISTER;186;1
 h00187;;;;VVM;SYS;;;;yes;Max. Differenz Vorlauf, Verdichter;MODBUS_HOLDING_REGISTER;187;10;°C;s16;10;250;100
 h00188;;;;VVM;SYS;;;;yes;Max. Differenz Vorlauf, Zusatzheizung;MODBUS_HOLDING_REGISTER;188;10;°C;s16;10;240;70
 h00194;;;X;VVM;SYS;;;;yes;Zeitformat;MODBUS_HOLDING_REGISTER;194;1;;u8;0;1;1
-h00196;;;;VVM;SYS;"{""0"": ""off"", ""*"": ""on"" }";;;yes;Alarmmaßnahme, Raumtemperatur senken;MODBUS_HOLDING_REGISTER;196;1;;u8;0;1;0
-h00197;;;;VVM;SYS;"{""0"": ""off"", ""*"": ""on"" }";;;yes;Alarmmaßnahme Brauchwassertemperatur senken;MODBUS_HOLDING_REGISTER;197;1;;u8;0;1;1
-h00198;;;;VVM;SYS;"{""0"": ""off"", ""*"": ""on"" }";;;yes;Hilfsbetrieb bei Alarm;MODBUS_HOLDING_REGISTER;198;1;;u8;0;0;0
+h00196;;;;VVM;SYS;#0off*on;;;yes;Alarmmaßnahme, Raumtemperatur senken;MODBUS_HOLDING_REGISTER;196;1;;u8;0;1;0
+h00197;;;;VVM;SYS;#0off*on;;;yes;Alarmmaßnahme Brauchwassertemperatur senken;MODBUS_HOLDING_REGISTER;197;1;;u8;0;1;1
+h00198;;;;VVM;SYS;#0off*on;;;yes;Hilfsbetrieb bei Alarm;MODBUS_HOLDING_REGISTER;198;1;;u8;0;0;0
 h00199;;;;;;;;;no;Raumfühler Klimatisierungssystem 4 verwenden;MODBUS_HOLDING_REGISTER;199;1;;u8;0;1;0
 h00200;;;;;;;;;no;Raumfühler Klimatisierungssystem 3 verwenden;MODBUS_HOLDING_REGISTER;200;1;;u8;0;1;0
 h00201;;;;;;;;;no;Raumfühler Klimatisierungssystem 2 verwenden;MODBUS_HOLDING_REGISTER;201;1;;u8;0;1;0
@@ -583,14 +583,14 @@ h00223;;;;;;;;;no;Voreingest. Luftvolumenstrom für Klimatisierungssystem;MODBUS
 h00225;;;;VVM;BW;;;;yes;Mehr Brauchwasser (Anzahl Minuten);MODBUS_HOLDING_REGISTER;225;1;;u16;0;0;0
 h00237;;;;VVM;SYS;"{""0"": ""auto"", ""1"": ""manual"", ""2"": ""add. heat only"" }";;"0 - auto
 1 - manual
-2 - add. heat only";yes;Betriebsmodus;MODBUS_HOLDING_REGISTER;237;1;;u8;0;0;0
+2 - add. heat only";used;Betriebsmodus;MODBUS_HOLDING_REGISTER;237;1;;u8;0;0;0
 h00679;;;;VVM;GM;;;;yes;GM-Differenz Start Zusatzheizung;MODBUS_HOLDING_REGISTER;679;1;GM;s16;100;2000;700
 h00681;;;;VVM;SYS;;;;yes;Kühl-/Heizsensor Sollwert;MODBUS_HOLDING_REGISTER;681;10;;s16;50;400;210
 h00685;;;;;;;;;no;Pool 1 Zubehör;MODBUS_HOLDING_REGISTER;685;1;;u8;0;1;0
-h00694;;;;VVM;BW;"{""0"": ""off"", ""*"": ""on"" }";;;yes;Brauchwasserkomfort;MODBUS_HOLDING_REGISTER;694;1;;u8;0;1;0
+h00694;;;;VVM;BW;#0off*on;;;yes;Brauchwasserkomfort;MODBUS_HOLDING_REGISTER;694;1;;u8;0;1;0
 h00697;;;;VVM;BW;;;;yes;Mehr Brauchwasser;MODBUS_HOLDING_REGISTER;697;1;;s8;0;0;0
 h00703;;;;VVM;GM;;;;yes;Startdifferenz GM, stufengeregelte Zusatzheizung;MODBUS_HOLDING_REGISTER;703;1;GM;s16;0;2000;400
-h00705;;;;VVM;BW;"{""0"": ""off"", ""*"": ""on"" }";;;yes;Brauchwasserkomfort Mischventil ein/aus;MODBUS_HOLDING_REGISTER;705;1;;u8;0;1;0
+h00705;;;;VVM;BW;#0off*on;;;yes;Brauchwasserkomfort Mischventil ein/aus;MODBUS_HOLDING_REGISTER;705;1;;u8;0;1;0
 h00709;;;;;;;;;no;Externes Kühlzubehör;MODBUS_HOLDING_REGISTER;709;1;;u8;0;1;0
 h00726;;;;;;;;;no;Kühlung angeschlossen, Klimatisierungssystem 1;MODBUS_HOLDING_REGISTER;726;1;;u8;0;1;1
 h00748;;;;S2125;WP;;;;yes;Betriebsart Ladepumpe (EB101);MODBUS_HOLDING_REGISTER;748;1;;u8;0;1;1
@@ -741,16 +741,16 @@ h02001;;;;;;;;;no;System 4 (RMU);MODBUS_HOLDING_REGISTER;2001;1;;u8;0;1;0
 h02107;;;;;;;;;no;EME20 API;MODBUS_HOLDING_REGISTER;2107;1;;u8;0;1;0
 h02108;;;;;;;;;no;EME20 API Eigenverbrauch einbeziehen;MODBUS_HOLDING_REGISTER;2108;1;;u8;0;1;0
 h02109;;;;;;;;;no;EME20 API Verfügbare Leistung;MODBUS_HOLDING_REGISTER;2109;1;;u16;0;65535;0
-h02111;;;X;VVM;SYS;"{""0"": ""off"", ""*"": ""on"" }";;;yes;Externe Justierung Input Haupteinheit (ECS1);MODBUS_HOLDING_REGISTER;2111;1;;u8;0;1;0
-h02112;;;X;VVM;SYS;"{""0"": ""off"", ""*"": ""on"" }";;;yes;Externe Justierung Input (ECS2);MODBUS_HOLDING_REGISTER;2112;1;;u8;0;1;0
+h02111;;;X;VVM;SYS;#0off*on;;;yes;Externe Justierung Input Haupteinheit (ECS1);MODBUS_HOLDING_REGISTER;2111;1;;u8;0;1;0
+h02112;;;X;VVM;SYS;#0off*on;;;yes;Externe Justierung Input (ECS2);MODBUS_HOLDING_REGISTER;2112;1;;u8;0;1;0
 h02113;;;;;;;;;no;Externe Justierung Input (ECS3);MODBUS_HOLDING_REGISTER;2113;1;;u8;0;1;0
 h02114;;;;;;;;;no;Externe Justierung Input (ECS4);MODBUS_HOLDING_REGISTER;2114;1;;u8;0;1;0
 h02115;;;;;;;;;no;Externe Justierung Input (ECS5);MODBUS_HOLDING_REGISTER;2115;1;;u8;0;1;0
 h02116;;;;;;;;;no;Externe Justierung Input (ECS6);MODBUS_HOLDING_REGISTER;2116;1;;u8;0;1;0
 h02117;;;;;;;;;no;Externe Justierung Input (ECS7);MODBUS_HOLDING_REGISTER;2117;1;;u8;0;1;0
 h02118;;;;;;;;;no;Externe Justierung Input (ECS8);MODBUS_HOLDING_REGISTER;2118;1;;u8;0;1;0
-h02119;;;X;VVM;SYS;"{""0"": ""off"", ""*"": ""on"" }";;;yes;Zone 1 beeinflusst durch ECS1;MODBUS_HOLDING_REGISTER;2119;1;;u8;0;1;0
-h02120;;;X;VVM;SYS;"{""0"": ""off"", ""*"": ""on"" }";;;yes;Zone 2 beeinflusst durch ECS1;MODBUS_HOLDING_REGISTER;2120;1;;u8;0;1;0
+h02119;;;X;VVM;SYS;#0off*on;;;yes;Zone 1 beeinflusst durch ECS1;MODBUS_HOLDING_REGISTER;2119;1;;u8;0;1;0
+h02120;;;X;VVM;SYS;#0off*on;;;yes;Zone 2 beeinflusst durch ECS1;MODBUS_HOLDING_REGISTER;2120;1;;u8;0;1;0
 h02121;;;;;;;;;no;Zone 3 beeinflusst durch ECS1;MODBUS_HOLDING_REGISTER;2121;1;;u8;0;1;0
 h02122;;;;;;;;;no;Zone 4 beeinflusst durch ECS1;MODBUS_HOLDING_REGISTER;2122;1;;u8;0;1;0
 h02123;;;;;;;;;no;Zone 5 beeinflusst durch ECS1;MODBUS_HOLDING_REGISTER;2123;1;;u8;0;1;0
@@ -789,8 +789,8 @@ h02155;;;;;;;;;no;Zone 37 beeinflusst durch ECS1;MODBUS_HOLDING_REGISTER;2155;1;
 h02156;;;;;;;;;no;Zone 38 beeinflusst durch ECS1;MODBUS_HOLDING_REGISTER;2156;1;;u8;0;1;0
 h02157;;;;;;;;;no;Zone 39 beeinflusst durch ECS1;MODBUS_HOLDING_REGISTER;2157;1;;u8;0;1;0
 h02158;;;;;;;;;no;Zone 40 beeinflusst durch ECS1;MODBUS_HOLDING_REGISTER;2158;1;;u8;0;1;0
-h02159;;;X;VVM;SYS;"{""0"": ""off"", ""*"": ""on"" }";;;yes;Zone 1 beeinflusst durch ECS2;MODBUS_HOLDING_REGISTER;2159;1;;u8;0;1;0
-h02160;;;X;VVM;SYS;"{""0"": ""off"", ""*"": ""on"" }";;;yes;Zone 2 beeinflusst durch ECS2;MODBUS_HOLDING_REGISTER;2160;1;;u8;0;1;0
+h02159;;;X;VVM;SYS;#0off*on;;;yes;Zone 1 beeinflusst durch ECS2;MODBUS_HOLDING_REGISTER;2159;1;;u8;0;1;0
+h02160;;;X;VVM;SYS;#0off*on;;;yes;Zone 2 beeinflusst durch ECS2;MODBUS_HOLDING_REGISTER;2160;1;;u8;0;1;0
 h02161;;;;;;;;;no;Zone 3 beeinflusst durch ECS2;MODBUS_HOLDING_REGISTER;2161;1;;u8;0;1;0
 h02162;;;;;;;;;no;Zone 4 beeinflusst durch ECS2;MODBUS_HOLDING_REGISTER;2162;1;;u8;0;1;0
 h02163;;;;;;;;;no;Zone 5 beeinflusst durch ECS2;MODBUS_HOLDING_REGISTER;2163;1;;u8;0;1;0
@@ -829,23 +829,23 @@ h02195;;;;;;;;;no;Zone 37 beeinflusst durch ECS2;MODBUS_HOLDING_REGISTER;2195;1;
 h02196;;;;;;;;;no;Zone 38 beeinflusst durch ECS2;MODBUS_HOLDING_REGISTER;2196;1;;u8;0;1;0
 h02197;;;;;;;;;no;Zone 39 beeinflusst durch ECS2;MODBUS_HOLDING_REGISTER;2197;1;;u8;0;1;0
 h02198;;;;;;;;;no;Zone 40 beeinflusst durch ECS2;MODBUS_HOLDING_REGISTER;2198;1;;u8;0;1;0
-h02439;;;X;VVM;SYS;"{""0"": ""off"", ""*"": ""on"" }";;;yes;Input an ECS1 beeinflusst ECS1;MODBUS_HOLDING_REGISTER;2439;1;;u8;0;1;0
-h02440;;;X;VVM;SYS;"{""0"": ""off"", ""*"": ""on"" }";;;yes;Input an ECS1 beeinflusst ECS2;MODBUS_HOLDING_REGISTER;2440;1;;u8;0;1;0
+h02439;;;X;VVM;SYS;#0off*on;;;yes;Input an ECS1 beeinflusst ECS1;MODBUS_HOLDING_REGISTER;2439;1;;u8;0;1;0
+h02440;;;X;VVM;SYS;#0off*on;;;yes;Input an ECS1 beeinflusst ECS2;MODBUS_HOLDING_REGISTER;2440;1;;u8;0;1;0
 h02441;;;;;;;;;no;Input an ECS1 beeinflusst ECS3;MODBUS_HOLDING_REGISTER;2441;1;;u8;0;1;0
 h02442;;;;;;;;;no;Input an ECS1 beeinflusst ECS4;MODBUS_HOLDING_REGISTER;2442;1;;u8;0;1;0
 h02443;;;;;;;;;no;Input an ECS1 beeinflusst ECS5;MODBUS_HOLDING_REGISTER;2443;1;;u8;0;1;0
 h02444;;;;;;;;;no;Input an ECS1 beeinflusst ECS6;MODBUS_HOLDING_REGISTER;2444;1;;u8;0;1;0
 h02445;;;;;;;;;no;Input an ECS1 beeinflusst ECS7;MODBUS_HOLDING_REGISTER;2445;1;;u8;0;1;0
 h02446;;;;;;;;;no;Input an ECS1 beeinflusst ECS8;MODBUS_HOLDING_REGISTER;2446;1;;u8;0;1;0
-h02447;;;X;VVM;SYS;"{""0"": ""off"", ""*"": ""on"" }";;;yes;Input an ECS2 beeinflusst ECS1;MODBUS_HOLDING_REGISTER;2447;1;;u8;0;1;0
-h02448;;;X;VVM;SYS;"{""0"": ""off"", ""*"": ""on"" }";;;yes;Input an ECS2 beeinflusst ECS2;MODBUS_HOLDING_REGISTER;2448;1;;u8;0;1;0
+h02447;;;X;VVM;SYS;#0off*on;;;yes;Input an ECS2 beeinflusst ECS1;MODBUS_HOLDING_REGISTER;2447;1;;u8;0;1;0
+h02448;;;X;VVM;SYS;#0off*on;;;yes;Input an ECS2 beeinflusst ECS2;MODBUS_HOLDING_REGISTER;2448;1;;u8;0;1;0
 h02449;;;;;;;;;no;Input an ECS2 beeinflusst ECS3;MODBUS_HOLDING_REGISTER;2449;1;;u8;0;1;0
 h02450;;;;;;;;;no;Input an ECS2 beeinflusst ECS4;MODBUS_HOLDING_REGISTER;2450;1;;u8;0;1;0
 h02451;;;;;;;;;no;Input an ECS2 beeinflusst ECS5;MODBUS_HOLDING_REGISTER;2451;1;;u8;0;1;0
 h02452;;;;;;;;;no;Input an ECS2 beeinflusst ECS6;MODBUS_HOLDING_REGISTER;2452;1;;u8;0;1;0
 h02453;;;;;;;;;no;Input an ECS2 beeinflusst ECS7;MODBUS_HOLDING_REGISTER;2453;1;;u8;0;1;0
 h02454;;;;;;;;;no;Input an ECS2 beeinflusst ECS8;MODBUS_HOLDING_REGISTER;2454;1;;u8;0;1;0
-h02503;;;X;VVM;SYS;"{""0"": ""off"", ""*"": ""on"" }";;;yes;Externe Einstellung für Justierung migriert;MODBUS_HOLDING_REGISTER;2503;1;;u8;0;1;0
+h02503;;;X;VVM;SYS;#0off*on;;;yes;Externe Einstellung für Justierung migriert;MODBUS_HOLDING_REGISTER;2503;1;;u8;0;1;0
 h02505;;;;;;;;;no;id:12801;MODBUS_HOLDING_REGISTER;2505;10;°C;s32;50;350;200
 h02507;;;;;;;;;no;id:12802;MODBUS_HOLDING_REGISTER;2507;10;°C;s32;50;350;200
 h02509;;;;;;;;;no;id:12803;MODBUS_HOLDING_REGISTER;2509;10;°C;s32;50;350;200
@@ -1289,15 +1289,15 @@ h05298;;;;;;;;;no;id:4972;MODBUS_HOLDING_REGISTER;5298;1;Hz;u8;20;117;20
 h05299;;;;;;;;;no;id:4973;MODBUS_HOLDING_REGISTER;5299;1;Hz;u8;23;120;23
 h05300;;;;;;;;;no;id:4974;MODBUS_HOLDING_REGISTER;5300;1;Hz;u8;23;120;23
 h05307;;;;;;;;;no;id:12388;MODBUS_HOLDING_REGISTER;5307;1;;u8;0;0;0
-h05326;;;;VVM;SYS;"{""0"": ""off"", ""*"": ""on"" }";;;yes;Tonsignal bei Alarm;MODBUS_HOLDING_REGISTER;5326;1;;u8;0;1;1
-h05327;;;;VVM;SYS;"{""0"": ""off"", ""*"": ""on"" }";;;yes;Ton bei Tastendruck;MODBUS_HOLDING_REGISTER;5327;1;;u8;0;1;1
+h05326;;;;VVM;SYS;#0off*on;;;yes;Tonsignal bei Alarm;MODBUS_HOLDING_REGISTER;5326;1;;u8;0;1;1
+h05327;;;;VVM;SYS;#0off*on;;;yes;Ton bei Tastendruck;MODBUS_HOLDING_REGISTER;5327;1;;u8;0;1;1
 h05328;;;;VVM;WP;;;;yes;BT12 Offset Wärmepumpe 1;MODBUS_HOLDING_REGISTER;5328;10;°C;s8;-50;50;0
 h05352;;;;S2125;WP;;;;yes;Min. zulässige Drehzahl (EB101 GP12);MODBUS_HOLDING_REGISTER;5352;1;%;u8;1;50;1
 h05360;;;;S2125;ENTEIS;;;;yes;Start Enteisung Ventilator (EB101);MODBUS_HOLDING_REGISTER;5360;1;;s8;0;1;0
-h05368;;;;S2125;SYS;"{""0"": ""off"", ""*"": ""on"" }";;;yes;Defrost Requested EB101;MODBUS_HOLDING_REGISTER;5368;1;;s8;0;1;0
+h05368;;;;S2125;ENTEIS;#0off*on;;;yes;Defrost Requested EB101;MODBUS_HOLDING_REGISTER;5368;1;;s8;0;1;0
 h05388;;;;;;;;;no;id:8302;MODBUS_HOLDING_REGISTER;5388;1;;u8;0;0;0
 h05390;;;;;;;;;no;id:8982;MODBUS_HOLDING_REGISTER;5390;1;;u8;0;0;0
-h05392;;;;VVM;SYS;"{""0"": ""off"", ""*"": ""on"" }";;;yes;Disable emergency restart GP1;MODBUS_HOLDING_REGISTER;5392;1;;u8;0;1;0
+h05392;;;;VVM;SYS;#0off*on;;;yes;Disable emergency restart GP1;MODBUS_HOLDING_REGISTER;5392;1;;u8;0;1;0
 h05393;;;;;;;;;no;Startzeit;MODBUS_HOLDING_REGISTER;5393;1;;-;-;-;-
 h05397;;;;;;;;;no;Startzeit;MODBUS_HOLDING_REGISTER;5397;1;;-;-;-;-
 h05401;;;;;;;;;no;Stoppzeit;MODBUS_HOLDING_REGISTER;5401;1;;-;-;-;-
