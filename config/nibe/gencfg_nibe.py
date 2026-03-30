@@ -98,7 +98,7 @@ class NibeModbusRegister:
         self.device = csv_dict.get('Device', '')
         self.subdevice = csv_dict.get('Subdevice', '')
 
-        self.data_conv = csv_dict.get('Enum', None)
+        self.data_conv = csv_dict.get('Data-Conv', None)
         self.comment = csv_dict.get('Comment', '')
         self.relevant = csv_get_bool('Relevant')
 
@@ -275,7 +275,7 @@ class DataPointEntry(CustomYamlDataclass):
                 if register.data_conv:
                     data_conv_dict = yaml.safe_load(register.data_conv)
                     if not isinstance(data_conv_dict, dict):
-                        raise ValueError(f'Data point "{register.key}": Enum field is not a yaml dict')
+                        raise ValueError(f'Data point "{register.key}": Data-Conv field is not a yaml dict')
                     elif not data_conv_dict.get('*', None):
                         data_conv_dict['*'] = Defaults.ENUM_UNKNOWN_VALUE
                 if data_conv_dict:
