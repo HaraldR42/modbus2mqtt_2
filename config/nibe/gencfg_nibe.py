@@ -59,7 +59,7 @@ class NibeModbusRegister:
 
 
     @classmethod
-    def read_nibe_csv(cls, csv_file: str) -> Dict[str, 'NibeModbusRegister']:
+    def read_enhanced_nibe_csv(cls, csv_file: str) -> Dict[str, 'NibeModbusRegister']:
         registers = {}
         
         # Ensure file exists
@@ -344,7 +344,7 @@ if __name__ == '__main__':
     if not csv_path:
         print('Error: nibe_modbus-configured.csv not found')
         exit(1)
-    nibe_registers = NibeModbusRegister.read_nibe_csv(csv_path)
+    nibe_registers = NibeModbusRegister.read_enhanced_nibe_csv(csv_path)
 
     # Create poller entries based on the registers
     current_poller = None
